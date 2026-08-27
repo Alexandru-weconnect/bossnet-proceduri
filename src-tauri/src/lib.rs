@@ -15,6 +15,7 @@ fn show_main_window(app: &AppHandle) {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_notification::init())
         .setup(|app| {
             let open = MenuItemBuilder::with_id("open", "Deschide Bossnet Proceduri").build(app)?;
             let hide = MenuItemBuilder::with_id("hide", "Ascunde fereastra").build(app)?;

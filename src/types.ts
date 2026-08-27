@@ -19,4 +19,19 @@ export interface BossnetProject {
 export interface AppearanceSettings {
   overlayOpacity: number;
   atmosphere: number;
+  overlayBlur: number;
+  showGrid: boolean;
+  dimWhenInactive: boolean;
+  alwaysOnTop: boolean;
+  inAppNotifications: boolean;
+  desktopNotifications: boolean;
+  projectNotifications: boolean;
+}
+
+export interface BossnetNotification {
+  id: string;
+  title: string;
+  message: string;
+  createdAt: number;
+  tone: "info" | "success";
 }

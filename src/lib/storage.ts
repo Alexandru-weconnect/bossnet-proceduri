@@ -8,6 +8,13 @@ const SESSION_DURATION_MS = 24 * 60 * 60 * 1000;
 export const DEFAULT_APPEARANCE: AppearanceSettings = {
   overlayOpacity: 0.76,
   atmosphere: 0.78,
+  overlayBlur: 20,
+  showGrid: true,
+  dimWhenInactive: false,
+  alwaysOnTop: false,
+  inAppNotifications: true,
+  desktopNotifications: false,
+  projectNotifications: true,
 };
 
 function readJson<T>(key: string): T | null {
@@ -79,6 +86,34 @@ export function readAppearance(): AppearanceSettings {
       typeof settings?.atmosphere === "number"
         ? Math.min(1, Math.max(0.2, settings.atmosphere))
         : DEFAULT_APPEARANCE.atmosphere,
+    overlayBlur:
+      typeof settings?.overlayBlur === "number"
+        ? Math.min(36, Math.max(0, settings.overlayBlur))
+        : DEFAULT_APPEARANCE.overlayBlur,
+    showGrid:
+      typeof settings?.showGrid === "boolean"
+        ? settings.showGrid
+        : DEFAULT_APPEARANCE.showGrid,
+    dimWhenInactive:
+      typeof settings?.dimWhenInactive === "boolean"
+        ? settings.dimWhenInactive
+        : DEFAULT_APPEARANCE.dimWhenInactive,
+    alwaysOnTop:
+      typeof settings?.alwaysOnTop === "boolean"
+        ? settings.alwaysOnTop
+        : DEFAULT_APPEARANCE.alwaysOnTop,
+    inAppNotifications:
+      typeof settings?.inAppNotifications === "boolean"
+        ? settings.inAppNotifications
+        : DEFAULT_APPEARANCE.inAppNotifications,
+    desktopNotifications:
+      typeof settings?.desktopNotifications === "boolean"
+        ? settings.desktopNotifications
+        : DEFAULT_APPEARANCE.desktopNotifications,
+    projectNotifications:
+      typeof settings?.projectNotifications === "boolean"
+        ? settings.projectNotifications
+        : DEFAULT_APPEARANCE.projectNotifications,
   };
 }
 

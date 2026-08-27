@@ -46,7 +46,10 @@ jobs:
 
             - Login mock @bossnet.ro cu sesiune 24h
             - Dashboard Proiect nou / Proiecte existente
-            - Overlay transparent configurabil
+            - Inputuri editabile corect în WebView2
+            - Reguli overlay, opacitate, gradient și blur configurabile
+            - Notificări in-app și native Windows
+            - Fundal stabil, fără colțuri albe
             - Icon app, taskbar și system tray
 
             Installer nesemnat: Windows SmartScreen poate afișa Unknown publisher.

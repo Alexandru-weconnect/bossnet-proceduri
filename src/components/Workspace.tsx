@@ -1,4 +1,10 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import {
+  isPermissionGranted,
+  requestPermission,
+  sendNotification,
+} from "@tauri-apps/plugin-notification";
 import {
   DEFAULT_APPEARANCE,
   readAppearance,
@@ -8,6 +14,7 @@ import {
 } from "../lib/storage";
 import type {
   AppearanceSettings,
+  BossnetNotification,
   BossnetProject,
   BossnetSession,
   ProjectRoute,
@@ -61,6 +68,28 @@ function applyAppearance(settings: AppearanceSettings) {
   const rootStyle = document.documentElement.style;
   rootStyle.setProperty("--overlay-alpha", settings.overlayOpacity.toFixed(2));
   rootStyle.setProperty("--atmosphere", settings.atmosphere.toFixed(2));
+  rootStyle.setProperty("--overlay-blur", `${Math.round(settings.overlayBlur)}px`);
+  document.documentElement.dataset.overlayGrid = settings.showGrid ? "on" : "off";
+}
+
+function isTauriRuntime(): boolean {
+  return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+}
+
+async function sendDesktopNotice(title: string, body: string, askPermission = false): Promise<boolean> {
+  if (!isTauriRuntime()) return false;
+
+  try {
+    let permissionGranted = await isPermissionGranted();
+    if (!permissionGranted && askPermission) {
+      permissionGranted = (await requestPermission()) === "granted";
+    }
+    if (!permissionGranted) return false;
+    sendNotification({ title, body });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function createProjectId(): string {
@@ -72,10 +101,14 @@ function createProjectId(): string {
 function MainHeader({
   label,
   title,
+  notificationCount,
+  onOpenNotifications,
   onOpenSettings,
 }: {
   label: string;
   title: string;
+  notificationCount: number;
+  onOpenNotifications: () => void;
   onOpenSettings: () => void;
 }) {
   return (
@@ -86,6 +119,15 @@ function MainHeader({
       </div>
       <div className="main-header__actions">
         <span className="sync-state"><i /> LOCAL / SINCRONIZAT</span>
+        <button
+          aria-label={`${notificationCount} notificări`}
+          className="icon-button notification-button"
+          onClick={onOpenNotifications}
+          type="button"
+        >
+          <Glyph name="bell" size={17} />
+          {notificationCount > 0 ? <span>{Math.min(notificationCount, 9)}</span> : null}
+        </button>
         <button aria-label="Setări de aspect" className="icon-button" onClick={onOpenSettings} type="button">
           <Glyph name="settings" size={18} />
         </button>
@@ -329,65 +371,274 @@ function ProceduresView() {
   );
 }
 
+function SettingSwitch({
+  checked,
+  description,
+  disabled = false,
+  label,
+  onChange,
+}: {
+  checked: boolean;
+  description: string;
+  disabled?: boolean;
+  label: string;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <button
+      aria-checked={checked}
+      className="setting-switch"
+      disabled={disabled}
+      onClick={() => onChange(!checked)}
+      role="switch"
+      type="button"
+    >
+      <span><strong>{label}</strong><small>{description}</small></span>
+      <i aria-hidden="true"><b /></i>
+    </button>
+  );
+}
+
+const OVERLAY_PRESETS = [
+  { label: "DISCRET", overlayOpacity: 0.58, atmosphere: 0.42, overlayBlur: 12 },
+  { label: "ECHILIBRAT", overlayOpacity: 0.76, atmosphere: 0.78, overlayBlur: 20 },
+  { label: "CONTRAST", overlayOpacity: 0.9, atmosphere: 0.58, overlayBlur: 28 },
+] as const;
+
 function SettingsPanel({
   settings,
   onChange,
   onClose,
+  onDesktopNotificationsChange,
+  onTestNotification,
 }: {
   settings: AppearanceSettings;
   onChange: (settings: AppearanceSettings) => void;
   onClose: () => void;
+  onDesktopNotificationsChange: (enabled: boolean) => void;
+  onTestNotification: () => void;
 }) {
   return (
     <div className="settings-layer">
       <button aria-label="Închide setările" className="settings-layer__backdrop" onClick={onClose} type="button" />
-      <aside className="settings-panel" aria-labelledby="settings-title">
+      <aside aria-labelledby="settings-title" aria-modal="true" className="settings-panel" role="dialog">
         <header>
           <div>
-            <span className="micro-label">INTERFAȚĂ</span>
-            <h2 id="settings-title">TRANSPARENȚĂ</h2>
+            <span className="micro-label">CONTROL LOCAL</span>
+            <h2 id="settings-title">SETĂRI</h2>
           </div>
           <button aria-label="Închide" className="icon-button" onClick={onClose} type="button">
             <Glyph name="close" size={17} />
           </button>
         </header>
 
-        <div className="setting-control">
-          <label htmlFor="opacity">
-            <span>OPACITATE OVERLAY</span>
-            <output>{Math.round(settings.overlayOpacity * 100)}%</output>
-          </label>
-          <input
-            id="opacity"
-            max="94"
-            min="48"
-            onChange={(event) => onChange({ ...settings, overlayOpacity: Number(event.target.value) / 100 })}
-            type="range"
-            value={Math.round(settings.overlayOpacity * 100)}
-          />
-          <div className="range-labels"><span>TRANSPARENT</span><span>SOLID</span></div>
+        <div className="settings-panel__body">
+          <section className="settings-section" aria-labelledby="overlay-heading">
+            <div className="settings-section__heading">
+              <span>01</span>
+              <div><h3 id="overlay-heading">ASPECT OVERLAY</h3><p>Atmosfera ferestrei și lizibilitatea suprafețelor.</p></div>
+            </div>
+
+            <div className="preset-grid" aria-label="Preset overlay">
+              {OVERLAY_PRESETS.map((preset) => {
+                const isActive =
+                  settings.overlayOpacity === preset.overlayOpacity
+                  && settings.atmosphere === preset.atmosphere
+                  && settings.overlayBlur === preset.overlayBlur;
+                return (
+                  <button
+                    aria-pressed={isActive}
+                    className={isActive ? "preset-button preset-button--active" : "preset-button"}
+                    key={preset.label}
+                    onClick={() => onChange({
+                      ...settings,
+                      atmosphere: preset.atmosphere,
+                      overlayBlur: preset.overlayBlur,
+                      overlayOpacity: preset.overlayOpacity,
+                    })}
+                    type="button"
+                  >
+                    {preset.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="setting-control">
+              <label htmlFor="opacity">
+                <span>OPACITATE SUPRAFEȚE</span>
+                <output>{Math.round(settings.overlayOpacity * 100)}%</output>
+              </label>
+              <input
+                id="opacity"
+                max="94"
+                min="48"
+                onChange={(event) => onChange({ ...settings, overlayOpacity: Number(event.target.value) / 100 })}
+                type="range"
+                value={Math.round(settings.overlayOpacity * 100)}
+              />
+              <div className="range-labels"><span>TRANSPARENT</span><span>SOLID</span></div>
+            </div>
+
+            <div className="setting-control">
+              <label htmlFor="atmosphere">
+                <span>INTENSITATE GRADIENT</span>
+                <output>{Math.round(settings.atmosphere * 100)}%</output>
+              </label>
+              <input
+                id="atmosphere"
+                max="100"
+                min="20"
+                onChange={(event) => onChange({ ...settings, atmosphere: Number(event.target.value) / 100 })}
+                type="range"
+                value={Math.round(settings.atmosphere * 100)}
+              />
+              <div className="range-labels"><span>DISCRET</span><span>INTENS</span></div>
+            </div>
+
+            <div className="setting-control">
+              <label htmlFor="overlay-blur">
+                <span>BLUR STICLĂ</span>
+                <output>{Math.round(settings.overlayBlur)} PX</output>
+              </label>
+              <input
+                id="overlay-blur"
+                max="36"
+                min="0"
+                onChange={(event) => onChange({ ...settings, overlayBlur: Number(event.target.value) })}
+                type="range"
+                value={Math.round(settings.overlayBlur)}
+              />
+              <div className="range-labels"><span>CLAR</span><span>DIFUZ</span></div>
+            </div>
+          </section>
+
+          <section className="settings-section" aria-labelledby="rules-heading">
+            <div className="settings-section__heading">
+              <span>02</span>
+              <div><h3 id="rules-heading">REGULI OVERLAY</h3><p>Când și cum rămâne stratul de lucru vizibil.</p></div>
+            </div>
+            <div className="setting-switches">
+              <SettingSwitch
+                checked={settings.showGrid}
+                description="Păstrează grila fină din fundal."
+                label="GRILĂ TEHNICĂ"
+                onChange={(showGrid) => onChange({ ...settings, showGrid })}
+              />
+              <SettingSwitch
+                checked={settings.dimWhenInactive}
+                description="Reduce atmosfera când lucrezi în altă fereastră."
+                label="ESTOMPARE LA INACTIVITATE"
+                onChange={(dimWhenInactive) => onChange({ ...settings, dimWhenInactive })}
+              />
+              <SettingSwitch
+                checked={settings.alwaysOnTop}
+                description="Ține Bossnet Proceduri deasupra celorlalte aplicații."
+                label="MEREU DEASUPRA"
+                onChange={(alwaysOnTop) => onChange({ ...settings, alwaysOnTop })}
+              />
+            </div>
+          </section>
+
+          <section className="settings-section" aria-labelledby="notifications-heading">
+            <div className="settings-section__heading">
+              <span>03</span>
+              <div><h3 id="notifications-heading">NOTIFICĂRI</h3><p>Alerte în aplicație și toast-uri Windows.</p></div>
+            </div>
+            <div className="setting-switches">
+              <SettingSwitch
+                checked={settings.inAppNotifications}
+                description="Afișează alerte compacte și istoricul din clopoțel."
+                label="ÎN APLICAȚIE"
+                onChange={(inAppNotifications) => onChange({ ...settings, inAppNotifications })}
+              />
+              <SettingSwitch
+                checked={settings.desktopNotifications}
+                description="Folosește centrul de notificări Windows."
+                label="DESKTOP WINDOWS"
+                onChange={onDesktopNotificationsChange}
+              />
+              <SettingSwitch
+                checked={settings.projectNotifications}
+                description="Confirmă proiectele create și schimbările importante."
+                disabled={!settings.inAppNotifications && !settings.desktopNotifications}
+                label="EVENIMENTE PROIECT"
+                onChange={(projectNotifications) => onChange({ ...settings, projectNotifications })}
+              />
+            </div>
+            <button
+              className="button button--ghost settings-panel__test"
+              disabled={!settings.inAppNotifications && !settings.desktopNotifications}
+              onClick={onTestNotification}
+              type="button"
+            >
+              <Glyph name="bell" size={15} /> TESTEAZĂ NOTIFICAREA
+            </button>
+          </section>
         </div>
 
-        <div className="setting-control">
-          <label htmlFor="atmosphere">
-            <span>INTENSITATE GRADIENT</span>
-            <output>{Math.round(settings.atmosphere * 100)}%</output>
-          </label>
-          <input
-            id="atmosphere"
-            max="100"
-            min="20"
-            onChange={(event) => onChange({ ...settings, atmosphere: Number(event.target.value) / 100 })}
-            type="range"
-            value={Math.round(settings.atmosphere * 100)}
-          />
-          <div className="range-labels"><span>DISCRET</span><span>INTENS</span></div>
-        </div>
+        <footer className="settings-panel__footer">
+          <button className="button button--ghost settings-panel__reset" onClick={() => onChange(DEFAULT_APPEARANCE)} type="button">
+            REVINO LA IMPLICIT
+          </button>
+          <p className="settings-panel__hint">Modificările se aplică instant și rămân salvate pe acest dispozitiv.</p>
+        </footer>
+      </aside>
+    </div>
+  );
+}
 
-        <button className="button button--ghost settings-panel__reset" onClick={() => onChange(DEFAULT_APPEARANCE)} type="button">
-          REVINO LA IMPLICIT
-        </button>
-        <p className="settings-panel__hint">Setarea se aplică instant și rămâne salvată pe acest dispozitiv.</p>
+function NotificationPanel({
+  notifications,
+  onClear,
+  onClose,
+}: {
+  notifications: BossnetNotification[];
+  onClear: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="settings-layer">
+      <button aria-label="Închide notificările" className="settings-layer__backdrop" onClick={onClose} type="button" />
+      <aside aria-labelledby="notification-title" aria-modal="true" className="notification-panel" role="dialog">
+        <header>
+          <div>
+            <span className="micro-label">ACTIVITATE LOCALĂ</span>
+            <h2 id="notification-title">NOTIFICĂRI</h2>
+          </div>
+          <button aria-label="Închide" className="icon-button" onClick={onClose} type="button">
+            <Glyph name="close" size={17} />
+          </button>
+        </header>
+
+        {notifications.length === 0 ? (
+          <div className="notification-empty">
+            <Glyph name="bell" size={25} />
+            <strong>NICIO NOTIFICARE</strong>
+            <p>Evenimentele proiectelor vor apărea aici.</p>
+          </div>
+        ) : (
+          <div className="notification-list" role="list">
+            {notifications.map((notification) => (
+              <article className={`notification-item notification-item--${notification.tone}`} key={notification.id} role="listitem">
+                <span className="notification-item__signal"><i /></span>
+                <div>
+                  <strong>{notification.title}</strong>
+                  <p>{notification.message}</p>
+                  <time dateTime={new Date(notification.createdAt).toISOString()}>
+                    {new Intl.DateTimeFormat("ro-RO", { hour: "2-digit", minute: "2-digit" }).format(notification.createdAt)}
+                  </time>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+
+        {notifications.length > 0 ? (
+          <button className="button button--ghost notification-panel__clear" onClick={onClear} type="button">
+            GOLEȘTE ISTORICUL
+          </button>
+        ) : null}
       </aside>
     </div>
   );
@@ -404,12 +655,120 @@ export function Workspace({ session, onLogout }: WorkspaceProps) {
   const [projects, setProjects] = useState<BossnetProject[]>(() => readProjects());
   const [appearance, setAppearance] = useState<AppearanceSettings>(() => readAppearance());
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [windowFocused, setWindowFocused] = useState(() => document.hasFocus());
+  const [notifications, setNotifications] = useState<BossnetNotification[]>(() =>
+    appearance.inAppNotifications
+      ? [{
+          id: "session-ready",
+          title: "Sesiune pregătită",
+          message: "Spațiul local Bossnet este activ și sincronizat.",
+          createdAt: Date.now(),
+          tone: "info",
+        }]
+      : [],
+  );
+  const [toast, setToast] = useState<BossnetNotification | null>(null);
 
   useEffect(() => applyAppearance(appearance), [appearance]);
+
+  useEffect(() => {
+    if (!isTauriRuntime()) return;
+    void getCurrentWindow().setAlwaysOnTop(appearance.alwaysOnTop).catch(() => undefined);
+  }, [appearance.alwaysOnTop]);
+
+  useEffect(() => {
+    const handleFocus = () => setWindowFocused(true);
+    const handleBlur = () => setWindowFocused(false);
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("blur", handleBlur);
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("blur", handleBlur);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timeoutId = window.setTimeout(() => setToast(null), 4200);
+    return () => window.clearTimeout(timeoutId);
+  }, [toast]);
+
+  useEffect(() => {
+    if (!settingsOpen && !notificationsOpen) return;
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSettingsOpen(false);
+        setNotificationsOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [notificationsOpen, settingsOpen]);
 
   function updateAppearance(nextSettings: AppearanceSettings) {
     setAppearance(nextSettings);
     saveAppearance(nextSettings);
+  }
+
+  function publishNotification(
+    title: string,
+    message: string,
+    tone: BossnetNotification["tone"] = "info",
+    forceInApp = false,
+  ) {
+    const notification: BossnetNotification = {
+      id: typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `notice-${Date.now().toString(36)}`,
+      title,
+      message,
+      createdAt: Date.now(),
+      tone,
+    };
+
+    if (appearance.inAppNotifications || forceInApp) {
+      setNotifications((current) => [notification, ...current].slice(0, 20));
+      setToast(notification);
+    }
+
+    if (appearance.desktopNotifications) {
+      void sendDesktopNotice(title, message);
+    }
+  }
+
+  async function handleDesktopNotificationsChange(enabled: boolean) {
+    if (!enabled) {
+      updateAppearance({ ...appearance, desktopNotifications: false });
+      return;
+    }
+
+    if (!isTauriRuntime()) {
+      updateAppearance({ ...appearance, desktopNotifications: true });
+      publishNotification(
+        "Preview web",
+        "Toast-urile Windows se activează în aplicația instalată.",
+        "info",
+        true,
+      );
+      return;
+    }
+
+    const permissionGranted = await sendDesktopNotice(
+      "Bossnet Proceduri",
+      "Notificările Windows sunt active.",
+      true,
+    );
+    if (permissionGranted) {
+      updateAppearance({ ...appearance, desktopNotifications: true });
+      publishNotification("Notificări activate", "Alertele Windows au fost conectate.", "success", true);
+    } else {
+      updateAppearance({ ...appearance, desktopNotifications: false });
+      publishNotification(
+        "Permisiune necesară",
+        "Windows a blocat notificările. Le poți permite din setările sistemului.",
+        "info",
+        true,
+      );
+    }
   }
 
   function addProject(project: BossnetProject) {
@@ -419,6 +778,13 @@ export function Workspace({ session, onLogout }: WorkspaceProps) {
       return nextProjects;
     });
     setView("projects");
+    if (appearance.projectNotifications) {
+      publishNotification(
+        "Proiect creat",
+        `${project.name} a intrat în etapa Descoperire pe ruta ${project.route}.`,
+        "success",
+      );
+    }
   }
 
   const headerTitle =
@@ -431,7 +797,7 @@ export function Workspace({ session, onLogout }: WorkspaceProps) {
           : "KNOWLEDGE BASE";
 
   return (
-    <div className="workspace">
+    <div className={appearance.dimWhenInactive && !windowFocused ? "workspace workspace--dimmed" : "workspace"}>
       <div className="atmosphere" aria-hidden="true">
         <i className="atmosphere__beam" />
         <i className="atmosphere__halo" />
@@ -462,8 +828,15 @@ export function Workspace({ session, onLogout }: WorkspaceProps) {
         </nav>
 
         <div className="sidebar__bottom">
-          <button className="nav-item" onClick={() => setSettingsOpen(true)} type="button">
-            <Glyph name="settings" size={18} /><span>Setări overlay</span>
+          <button
+            className="nav-item"
+            onClick={() => {
+              setNotificationsOpen(false);
+              setSettingsOpen(true);
+            }}
+            type="button"
+          >
+            <Glyph name="settings" size={18} /><span>Setări</span>
           </button>
           <div className="account-block">
             <span className="account-block__avatar">{session.email.slice(0, 1).toUpperCase()}</span>
@@ -474,7 +847,19 @@ export function Workspace({ session, onLogout }: WorkspaceProps) {
       </aside>
 
       <main className="workspace-main">
-        <MainHeader label="BOSSNET / CONTROL" title={headerTitle} onOpenSettings={() => setSettingsOpen(true)} />
+        <MainHeader
+          label="BOSSNET / CONTROL"
+          notificationCount={notifications.length}
+          onOpenNotifications={() => {
+            setSettingsOpen(false);
+            setNotificationsOpen(true);
+          }}
+          onOpenSettings={() => {
+            setNotificationsOpen(false);
+            setSettingsOpen(true);
+          }}
+          title={headerTitle}
+        />
         <div className="workspace-content">
           {view === "dashboard" ? <DashboardView onNavigate={setView} /> : null}
           {view === "new-project" ? <NewProjectView onCancel={() => setView("dashboard")} onCreate={addProject} /> : null}
@@ -487,8 +872,35 @@ export function Workspace({ session, onLogout }: WorkspaceProps) {
         <SettingsPanel
           onChange={updateAppearance}
           onClose={() => setSettingsOpen(false)}
+          onDesktopNotificationsChange={(enabled) => void handleDesktopNotificationsChange(enabled)}
+          onTestNotification={() => publishNotification(
+            "Test reușit",
+            "Regulile de notificare Bossnet funcționează corect.",
+            "success",
+            true,
+          )}
           settings={appearance}
         />
+      ) : null}
+
+      {notificationsOpen ? (
+        <NotificationPanel
+          notifications={notifications}
+          onClear={() => setNotifications([])}
+          onClose={() => setNotificationsOpen(false)}
+        />
+      ) : null}
+
+      {toast ? (
+        <div aria-atomic="true" aria-live="polite" className="toast-region">
+          <div className={`app-toast app-toast--${toast.tone}`}>
+            <span><Glyph name={toast.tone === "success" ? "check" : "bell"} size={16} /></span>
+            <div><strong>{toast.title}</strong><p>{toast.message}</p></div>
+            <button aria-label="Închide notificarea" onClick={() => setToast(null)} type="button">
+              <Glyph name="close" size={14} />
+            </button>
+          </div>
+        </div>
       ) : null}
     </div>
   );

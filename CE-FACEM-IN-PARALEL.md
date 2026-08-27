@@ -10,7 +10,9 @@ Acest document separă MVP-ul build-uit de integrările care au nevoie de creden
 4. Dashboard compact: `Proiect nou` / `Proiecte existente`.
 5. Inițializare proiect pe cele două rute din knowledge base: `CLONE` și `NEW`.
 6. Rezumat procedural pentru Discovery, Preview, QA și Shopify.
-7. Reglaj persistent pentru transparența stratului de lucru.
+7. Reglaje persistente pentru opacitate, gradient, blur, grilă și estompare la inactivitate.
+8. Regulă nativă „mereu deasupra” și fundal Windows stabil, fără colțuri albe.
+9. Notificări in-app cu istoric și notificări native Windows configurabile.
 
 ## Fluxul paralel 1 — Google OAuth real
 

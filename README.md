@@ -4,19 +4,21 @@ Aplicație desktop Tauri 2 pentru pornirea și urmărirea proiectelor Bossnet. I
 
 ## Descărcare Windows
 
-- [Descarcă Bossnet Proceduri 0.1.0 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.1.0/Bossnet.Proceduri_0.1.0_x64-setup.exe)
-- [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.1.0)
+- [Descarcă Bossnet Proceduri 0.2.0 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.2.0/Bossnet.Proceduri_0.2.0_x64-setup.exe)
+- [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.2.0)
 
-SHA-256: `ef9c6873f8fe711505b0ef075d2dbd0bf28781e1e1640755740ec0ca65833476`
-
-## Inclus în versiunea 0.1.0
+## Inclus în versiunea 0.2.0
 
 - login mock pentru orice adresă `@bossnet.ro`;
 - sesiune locală de 24 de ore, cu expirare automată;
 - dashboard cu punctele de intrare **Proiect nou** și **Proiecte existente**;
 - formular de inițializare pentru rutele Bossnet `NEW` și `CLONE`;
 - proiecte salvate local și rezumat al procedurilor Shopify;
-- transparența overlay-ului reglabilă și persistentă;
+- inputuri editabile corect în WebView2/Windows;
+- preseturi pentru opacitate, gradient și blur, persistente local;
+- reguli overlay pentru grilă, estompare la inactivitate și fereastră mereu deasupra;
+- notificări integrate în aplicație, istoric local și toast-uri native Windows;
+- fundal nativ negru, fără colțuri albe în zonele geometrice decupate;
 - icon dedicat pentru executabil, taskbar și system tray;
 - închiderea ferestrei o ascunde în tray; aplicația se oprește din meniul tray;
 - installer Windows NSIS generat în GitHub Actions.
@@ -44,6 +46,6 @@ npm run tauri build
 
 ## Securitate și date
 
-Versiunea de test păstrează local doar emailul, expirarea sesiunii, preferința de transparență și proiectele mock. Cheile de storage sunt versionate. Nu sunt stocate tokenuri Google sau parole.
+Versiunea de test păstrează local doar emailul, expirarea sesiunii, preferințele de interfață/notificare și proiectele mock. Cheile de storage sunt versionate. Nu sunt stocate tokenuri Google sau parole.
 
 Installerul public este nesemnat în această etapă, deci Windows SmartScreen poate afișa „Unknown publisher”. Certificarea oficială este pasul separat documentat în roadmap.
