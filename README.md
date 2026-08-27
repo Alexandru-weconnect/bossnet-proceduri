@@ -2,6 +2,13 @@
 
 Aplicație desktop Tauri 2 pentru pornirea și urmărirea proiectelor Bossnet. Interfața este compactă, folosește un limbaj vizual nocturn, geometric și include un strat transparent configurabil.
 
+## Descărcare Windows
+
+- [Descarcă Bossnet Proceduri 0.1.0 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.1.0/Bossnet.Proceduri_0.1.0_x64-setup.exe)
+- [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.1.0)
+
+SHA-256: `ef9c6873f8fe711505b0ef075d2dbd0bf28781e1e1640755740ec0ca65833476`
+
 ## Inclus în versiunea 0.1.0
 
 - login mock pentru orice adresă `@bossnet.ro`;
