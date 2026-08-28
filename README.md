@@ -9,7 +9,7 @@ Versiunea `0.4.3` repară livrarea notificărilor native după repornirea aplica
 - [Descarcă Bossnet Proceduri 0.4.3 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.4.3/Bossnet.Proceduri_0.4.3_x64-setup.exe)
 - [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.4.3)
 
-SHA-256: va fi completat după verificarea installerului publicat.
+SHA-256: `f845afd05faa7ea1e294d9203164b2a3d2d6a51515621ce723231916b8d06227`
 
 ## Inclus în versiunea 0.4.3
 
