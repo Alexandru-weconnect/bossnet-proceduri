@@ -109,6 +109,7 @@ export function LoginView({ onAuthenticated }: LoginViewProps) {
   const buttonLabel = authStage === "idle"
     ? "CONTINUĂ CU GOOGLE"
     : AUTH_STAGE_COPY[authStage].button;
+  const showAuthFeedback = !GOOGLE_CLIENT_ID || Boolean(error) || isLoading;
 
   return (
     <main className="login" aria-labelledby="login-title">
@@ -116,10 +117,8 @@ export function LoginView({ onAuthenticated }: LoginViewProps) {
         <div className="login__watermark" aria-hidden="true">B/P</div>
         <div className="login__copy">
           <p className="eyebrow"><span /> CONTROL INTERN</p>
-          <h1 id="login-title">PROCEDURI<br />ÎN MIȘCARE.</h1>
-          <p>
-            Un singur punct de control pentru proiectele Bossnet — de la discovery la predarea Shopify.
-          </p>
+          <h1 id="login-title">PROCEDURI<br />INTERNE</h1>
+          <p className="login__update">Last update: v0.4 MAHMURIA</p>
         </div>
         <div className="login__index" aria-hidden="true">
           <span>01</span>
@@ -138,30 +137,35 @@ export function LoginView({ onAuthenticated }: LoginViewProps) {
           </div>
 
           <form onSubmit={handleSubmit} noValidate>
-            <label htmlFor="email">EMAIL BOSSNET</label>
-            <div className={`input-shell ${error ? "input-shell--error" : ""}`}>
-              <Glyph name="user" size={18} />
-              <input
-                autoComplete="email"
-                disabled={Boolean(GOOGLE_CLIENT_ID)}
-                id="email"
-                inputMode="email"
-                onChange={(event) => {
-                  setEmail(event.target.value);
-                  if (error) setError("");
-                }}
-                spellCheck="false"
-                type="email"
-                value={GOOGLE_CLIENT_ID ? "Google Workspace · bossnet.ro" : email}
-              />
-              <span>DOMENIU INTERN</span>
-            </div>
-            <div
-              className={`field-message ${isLoading ? "field-message--active" : ""}`}
-              aria-live="polite"
-            >
-              {statusMessage}
-            </div>
+            {!GOOGLE_CLIENT_ID ? (
+              <>
+                <label htmlFor="email">EMAIL BOSSNET</label>
+                <div className={`input-shell ${error ? "input-shell--error" : ""}`}>
+                  <Glyph name="user" size={18} />
+                  <input
+                    autoComplete="email"
+                    id="email"
+                    inputMode="email"
+                    onChange={(event) => {
+                      setEmail(event.target.value);
+                      if (error) setError("");
+                    }}
+                    spellCheck="false"
+                    type="email"
+                    value={email}
+                  />
+                  <span>DOMENIU INTERN</span>
+                </div>
+              </>
+            ) : null}
+            {showAuthFeedback ? (
+              <div
+                className={`field-message ${isLoading ? "field-message--active" : ""}`}
+                aria-live="polite"
+              >
+                {statusMessage}
+              </div>
+            ) : null}
 
             <button
               aria-busy={isLoading}
@@ -176,8 +180,10 @@ export function LoginView({ onAuthenticated }: LoginViewProps) {
           </form>
 
           <div className="login-card__status">
-            <span><i /> {GOOGLE_CLIENT_ID ? "GOOGLE WORKSPACE" : "MOD TEST"}</span>
-            <span>{GOOGLE_CLIENT_ID ? "PKCE · BROWSER SISTEM" : "OAUTH GOOGLE · NECONFIGURAT"}</span>
+            <span>
+              <i />
+              <span>{GOOGLE_CLIENT_ID ? "Doar utilizatorii bossnet sunt autorizati" : "MOD TEST"}</span>
+            </span>
           </div>
         </div>
       </section>

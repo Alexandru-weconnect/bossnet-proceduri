@@ -2,17 +2,22 @@
 
 Aplicație desktop Tauri 2 pentru pornirea și urmărirea proiectelor Bossnet. Interfața este compactă, folosește un limbaj vizual nocturn, geometric și include un strat transparent configurabil.
 
-Versiunea `0.4.2` pornește toate textele funcționale de la 14 px și rearanjează containerele care le decupau. Loginul, meniul compact, setările, laboratorul Debug, ierarhia și cardurile Director au fost verificate la fereastra implicită și la minimul Tauri.
+Versiunea `0.4.3` repară livrarea notificărilor native după repornirea aplicației și simplifică ecranul de login. Trimiterea Windows este confirmată de comanda nativă Tauri, iar testul afișează o instrucțiune clară dacă sistemul blochează notificarea.
 
 ## Descărcare Windows
 
-- [Descarcă Bossnet Proceduri 0.4.2 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.4.2/Bossnet.Proceduri_0.4.2_x64-setup.exe)
-- [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.4.2)
+- [Descarcă Bossnet Proceduri 0.4.3 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.4.3/Bossnet.Proceduri_0.4.3_x64-setup.exe)
+- [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.4.3)
 
-SHA-256: `e6db6e41cf647e740655083a52459b46eaae55e93ff619ce3556c7fa40a11bb9`
+SHA-256: va fi completat după verificarea installerului publicat.
 
-## Inclus în versiunea 0.4.2
+## Inclus în versiunea 0.4.3
 
+- notificările Windows sunt trimise printr-o comandă Rust nativă, fără starea de permisiune volatilă a WebView2;
+- testul de notificare confirmă livrarea nativă și explică exact unde trebuie permisă aplicația dacă Windows o blochează;
+- loginul afișează „PROCEDURI INTERNE” și „Last update: v0.4 MAHMURIA”;
+- câmpul email, explicația introductivă și eticheta PKCE au fost eliminate din loginul de producție;
+- cardul păstrează doar acțiunea Google și mesajul „Doar utilizatorii bossnet sunt autorizati”;
 - toate textele funcționale au minimum 14 px;
 - cardurile, rândurile, formularele și panourile au înălțimi adaptate noii tipografii;
 - loginul și meniul lateral răspund corect la fereastra minimă 820×580;
@@ -40,7 +45,7 @@ SHA-256: `e6db6e41cf647e740655083a52459b46eaae55e93ff619ce3556c7fa40a11bb9`
 
 > Client ID-ul Google Desktop este configurat în installer și în API. Client Secret-ul este configurat numai în mediul privat al API-ului, nu în Git, frontend sau installer.
 
-## Arhitectura 0.4.2
+## Arhitectura 0.4.3
 
 ```text
 Aplicația Windows

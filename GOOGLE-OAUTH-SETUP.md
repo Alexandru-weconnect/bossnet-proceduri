@@ -45,7 +45,7 @@ Configurația este împărțită astfel:
 - API secret store: `GOOGLE_CLIENT_SECRET`;
 - workflow-ul GitHub Actions: `VITE_GOOGLE_CLIENT_ID`, ca identificator public inclus în build.
 
-Client ID-ul din API și cel din build trebuie să fie identice. Credentialul Desktop corectat a fost configurat la 28 august 2026; Client Secret-ul este prezent numai în mediul Passenger al API-ului. Installerul `0.4.2` nu îl conține.
+Client ID-ul din API și cel din build trebuie să fie identice. Credentialul Desktop corectat a fost configurat la 28 august 2026; Client Secret-ul este prezent numai în mediul Passenger al API-ului. Installerul `0.4.3` nu îl conține.
 
 ## Dacă organizația blochează aplicația
 

@@ -13,6 +13,7 @@ use tauri::{
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     AppHandle, Manager, WindowEvent,
 };
+use tauri_plugin_notification::NotificationExt;
 use url::Url;
 
 const GOOGLE_AUTH_URL: &str = "https://accounts.google.com/o/oauth2/v2/auth";
@@ -193,6 +194,26 @@ async fn google_oauth_login(
     })
 }
 
+#[tauri::command]
+fn show_native_notification(app: AppHandle, title: String, body: String) -> Result<(), String> {
+    let title = title.trim();
+    let body = body.trim();
+
+    if title.is_empty() || title.chars().count() > 120 {
+        return Err("Titlul notificării este invalid".to_string());
+    }
+    if body.is_empty() || body.chars().count() > 500 {
+        return Err("Conținutul notificării este invalid".to_string());
+    }
+
+    app.notification()
+        .builder()
+        .title(title)
+        .body(body)
+        .show()
+        .map_err(|error| format!("Notificarea nativă nu a putut fi afișată: {error}"))
+}
+
 fn show_main_window(app: &AppHandle) {
     if let Some(window) = app.get_webview_window("main") {
         let _ = window.show();
@@ -205,7 +226,10 @@ fn show_main_window(app: &AppHandle) {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_notification::init())
-        .invoke_handler(tauri::generate_handler![google_oauth_login])
+        .invoke_handler(tauri::generate_handler![
+            google_oauth_login,
+            show_native_notification
+        ])
         .setup(|app| {
             let open = MenuItemBuilder::with_id("open", "Deschide Bossnet Proceduri").build(app)?;
             let hide = MenuItemBuilder::with_id("hide", "Ascunde fereastra").build(app)?;

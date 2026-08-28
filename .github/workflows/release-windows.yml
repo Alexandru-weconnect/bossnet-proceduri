@@ -55,6 +55,9 @@ jobs:
           releaseBody: |
             Bossnet Proceduri pentru Windows.
 
+            - Notificări Windows trimise și confirmate prin comandă Rust nativă, stabile după repornirea aplicației
+            - Test de notificare cu diagnostic explicit atunci când Windows blochează toast-ul
+            - Login simplificat: PROCEDURI INTERNE, Last update v0.4 MAHMURIA și o singură acțiune Google
             - Login Google Workspace @bossnet.ro cu PKCE, schimb de cod securizat în API și sesiune de 24h
             - Feedback distinct pentru browser, callback și conectarea la server, cu timeout-uri explicite
             - Tipografie funcțională de minimum 14 px și layout-uri responsive fără texte decupate

@@ -1,10 +1,6 @@
 import { lazy, Suspense, useEffect, useState, type FormEvent } from "react";
+import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import {
-  isPermissionGranted,
-  requestPermission,
-  sendNotification,
-} from "@tauri-apps/plugin-notification";
 import {
   DEFAULT_APPEARANCE,
   readAppearance,
@@ -86,16 +82,11 @@ function isTauriRuntime(): boolean {
   return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 }
 
-async function sendDesktopNotice(title: string, body: string, askPermission = false): Promise<boolean> {
+async function sendDesktopNotice(title: string, body: string): Promise<boolean> {
   if (!isTauriRuntime()) return false;
 
   try {
-    let permissionGranted = await isPermissionGranted();
-    if (!permissionGranted && askPermission) {
-      permissionGranted = (await requestPermission()) === "granted";
-    }
-    if (!permissionGranted) return false;
-    sendNotification({ title, body });
+    await invoke("show_native_notification", { title, body });
     return true;
   } catch {
     return false;
@@ -730,6 +721,7 @@ export function Workspace({ session, onLogout }: WorkspaceProps) {
     message: string,
     tone: BossnetNotification["tone"] = "info",
     forceInApp = false,
+    skipDesktop = false,
   ) {
     const notification: BossnetNotification = {
       id: typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `notice-${Date.now().toString(36)}`,
@@ -744,7 +736,7 @@ export function Workspace({ session, onLogout }: WorkspaceProps) {
       setToast(notification);
     }
 
-    if (appearance.desktopNotifications) {
+    if (appearance.desktopNotifications && !skipDesktop) {
       void sendDesktopNotice(title, message);
     }
   }
@@ -766,12 +758,11 @@ export function Workspace({ session, onLogout }: WorkspaceProps) {
       return;
     }
 
-    const permissionGranted = await sendDesktopNotice(
+    const notificationDelivered = await sendDesktopNotice(
       "Bossnet Proceduri",
       "Notificările Windows sunt active.",
-      true,
     );
-    if (permissionGranted) {
+    if (notificationDelivered) {
       updateAppearance({ ...appearance, desktopNotifications: true });
       publishNotification("Notificări activate", "Alertele Windows au fost conectate.", "success", true);
     } else {
@@ -783,6 +774,41 @@ export function Workspace({ session, onLogout }: WorkspaceProps) {
         true,
       );
     }
+  }
+
+  async function handleTestNotification() {
+    const title = "Test reușit";
+    const message = "Regulile de notificare Bossnet funcționează corect.";
+
+    if (!appearance.desktopNotifications) {
+      publishNotification(title, message, "success", true, true);
+      return;
+    }
+
+    if (!isTauriRuntime()) {
+      publishNotification(
+        "Preview web",
+        "Notificarea Windows poate fi testată numai din aplicația instalată.",
+        "info",
+        true,
+        true,
+      );
+      return;
+    }
+
+    const notificationDelivered = await sendDesktopNotice(title, message);
+    if (notificationDelivered) {
+      publishNotification(title, message, "success", true, true);
+      return;
+    }
+
+    publishNotification(
+      "Notificarea Windows este blocată",
+      "Permite Bossnet Proceduri în Setări Windows > Sistem > Notificări, apoi testează din nou.",
+      "info",
+      true,
+      true,
+    );
   }
 
   function addProject(project: BossnetProject) {
@@ -902,12 +928,7 @@ export function Workspace({ session, onLogout }: WorkspaceProps) {
           onChange={updateAppearance}
           onClose={() => setSettingsOpen(false)}
           onDesktopNotificationsChange={(enabled) => void handleDesktopNotificationsChange(enabled)}
-          onTestNotification={() => publishNotification(
-            "Test reușit",
-            "Regulile de notificare Bossnet funcționează corect.",
-            "success",
-            true,
-          )}
+          onTestNotification={() => void handleTestNotification()}
           settings={appearance}
         />
       ) : null}
