@@ -9,7 +9,7 @@ Versiunea `0.4.1` corectează finalizarea loginului pentru noul client Google De
 - [Descarcă Bossnet Proceduri 0.4.1 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.4.1/Bossnet.Proceduri_0.4.1_x64-setup.exe)
 - [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.4.1)
 
-SHA-256: se publică după verificarea installerului generat de GitHub Actions.
+SHA-256: `6194df7339788e09953df5e38ed988070f7e0c79be9a49195411bfd4ddd00afc`
 
 ## Inclus în versiunea 0.4.1
 
