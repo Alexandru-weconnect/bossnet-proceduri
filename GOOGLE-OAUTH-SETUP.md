@@ -44,7 +44,7 @@ Valoarea este configurată în două locuri:
 - API: `GOOGLE_CLIENT_ID`;
 - workflow-ul GitHub Actions: `VITE_GOOGLE_CLIENT_ID`, ca identificator public inclus în build.
 
-Ambele trebuie să fie identice. Client ID-ul primit pentru aplicația Desktop a fost configurat la 28 august 2026; Client Secret-ul din fișierul descărcat nu este utilizat și nu intră în repository, API sau installer. Installerul `0.3.0` a fost construit cu această configurație; a rămas testul interactiv cu un cont real.
+Ambele trebuie să fie identice. Client ID-ul Desktop corectat a fost configurat la 28 august 2026; Client Secret-ul din fișierul descărcat nu este utilizat și nu intră în repository, API sau installer. Installerul `0.4.0` folosește această configurație; a rămas testul interactiv cu un cont real.
 
 ## Dacă organizația blochează aplicația
 

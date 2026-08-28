@@ -23,7 +23,12 @@ import type {
 import { BrandMark } from "./BrandMark";
 import { Glyph, type GlyphName } from "./Glyph";
 
-type WorkspaceView = "dashboard" | "new-project" | "people" | "projects" | "procedures";
+type WorkspaceView = "dashboard" | "debug" | "new-project" | "people" | "projects" | "procedures";
+
+const DebugView = lazy(async () => {
+  const module = await import("./DebugView");
+  return { default: module.DebugView };
+});
 
 const PeopleView = lazy(async () => {
   const module = await import("./PeopleView");
@@ -656,6 +661,7 @@ const NAV_ITEMS: Array<{ view: WorkspaceView; label: string; icon: GlyphName }> 
   { view: "projects", label: "Proiecte", icon: "grid" },
   { view: "people", label: "Echipă", icon: "user" },
   { view: "procedures", label: "Proceduri", icon: "layers" },
+  { view: "debug", label: "Debug", icon: "bug" },
 ];
 
 export function Workspace({ session, onLogout }: WorkspaceProps) {
@@ -804,7 +810,9 @@ export function Workspace({ session, onLogout }: WorkspaceProps) {
           ? "REGISTRU PROIECTE"
           : view === "people"
             ? "ORGANIZAȚIE"
-            : "KNOWLEDGE BASE";
+            : view === "procedures"
+              ? "KNOWLEDGE BASE"
+              : "COMPONENT LAB";
 
   return (
     <div className={appearance.dimWhenInactive && !windowFocused ? "workspace workspace--dimmed" : "workspace"}>
@@ -881,6 +889,11 @@ export function Workspace({ session, onLogout }: WorkspaceProps) {
             </Suspense>
           ) : null}
           {view === "procedures" ? <ProceduresView /> : null}
+          {view === "debug" ? (
+            <Suspense fallback={<div className="people-loading"><span className="button-loader" /><strong>SE ÎNCARCĂ LABORATORUL</strong></div>}>
+              <DebugView />
+            </Suspense>
+          ) : null}
         </div>
       </main>
 

@@ -1,6 +1,7 @@
 export type GlyphName =
   | "arrow"
   | "bell"
+  | "bug"
   | "check"
   | "chevron"
   | "close"
@@ -27,6 +28,7 @@ interface GlyphProps {
 const PATHS: Record<GlyphName, React.ReactNode> = {
   arrow: <><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></>,
   bell: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" /><path d="M10 21h4" /></>,
+  bug: <><path d="M8 2l1.4 2.1" /><path d="M16 2l-1.4 2.1" /><path d="M9 9h6" /><path d="M12 5a5 5 0 0 0-5 5v4a5 5 0 0 0 10 0v-4a5 5 0 0 0-5-5Z" /><path d="M3 9h4" /><path d="M17 9h4" /><path d="M3 15h4" /><path d="M17 15h4" /><path d="M12 9v10" /></>,
   check: <path d="m5 12 4 4L19 6" />,
   chevron: <path d="m9 18 6-6-6-6" />,
   close: <><path d="m6 6 12 12" /><path d="M18 6 6 18" /></>,

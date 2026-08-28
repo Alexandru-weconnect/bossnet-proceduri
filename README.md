@@ -2,16 +2,14 @@
 
 Aplicație desktop Tauri 2 pentru pornirea și urmărirea proiectelor Bossnet. Interfața este compactă, folosește un limbaj vizual nocturn, geometric și include un strat transparent configurabil.
 
-Versiunea publică `0.3.0` adaugă PostgreSQL nativ, un API Node.js separat, autentificare Google Workspace cu PKCE și directorul organizațional. Datele personale sunt importate direct în baza de date și nu intră în repository sau în executabil.
+Versiunea publică `0.4.0` folosește Client ID-ul Google Desktop corectat și adaugă un laborator separat `Debug` pentru verificarea componentelor în WebView2. PostgreSQL nativ, API-ul securizat și directorul organizațional rămân integrate; datele personale nu intră în repository sau în executabil.
 
 ## Descărcare Windows
 
-- [Descarcă Bossnet Proceduri 0.3.0 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.3.0/Bossnet.Proceduri_0.3.0_x64-setup.exe)
-- [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.3.0)
+- [Descarcă Bossnet Proceduri 0.4.0 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.4.0/Bossnet.Proceduri_0.4.0_x64-setup.exe)
+- [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.4.0)
 
-SHA-256: `950f332726eb0df19bee7caa6f0e7b191c854b9c7f1b90a6097a2bcb5e0fde5e`
-
-## Inclus în versiunea 0.3.0
+## Inclus în versiunea 0.4.0
 
 - login Google Workspace `@bossnet.ro` în browserul sistemului, cu Authorization Code și PKCE;
 - sesiune opacă server-side de 24 de ore, revocabilă și cu expirare automată;
@@ -19,6 +17,8 @@ SHA-256: `950f332726eb0df19bee7caa6f0e7b191c854b9c7f1b90a6097a2bcb5e0fde5e`
 - director organizațional protejat cu utilizatori, ierarhie, departamente și telefoane importate;
 - login mock disponibil numai în development și dezactivat în installer;
 - dashboard cu punctele de intrare **Proiect nou** și **Proiecte existente**;
+- rubrică separată **Debug**, încărcată la cerere, cu dropdown, search și carduri interactive;
+- date picker simplu și range, icon-uri SVG Lucide, textarea controlată și editor WYSIWYG cu toolbar;
 - formular de inițializare pentru rutele Bossnet `NEW` și `CLONE`;
 - proiecte salvate local și rezumat al procedurilor Shopify;
 - inputuri editabile corect în WebView2/Windows;
@@ -32,7 +32,7 @@ SHA-256: `950f332726eb0df19bee7caa6f0e7b191c854b9c7f1b90a6097a2bcb5e0fde5e`
 
 > Client ID-ul Google Desktop este configurat în installer și în API. Acceptanța interactivă trebuie făcută cu un cont activ `@bossnet.ro` care există în directorul importat.
 
-## Arhitectura 0.3.0
+## Arhitectura 0.4.0
 
 ```text
 Aplicația Windows

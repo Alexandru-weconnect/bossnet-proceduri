@@ -16,6 +16,7 @@ Acest document separă MVP-ul build-uit de integrările care au nevoie de creden
 10. PostgreSQL 16 nativ, schemă `bossnet`, sesiuni revocabile și API Node.js separat.
 11. Import validat din workbook pentru utilizatori, ierarhie, telefoane, departamente și apartenențe.
 12. Ecran `Echipă` care încarcă directorul numai după autentificare.
+13. Rubrică separată `Debug`, cu dropdown, search, carduri, date picker simplu/range, icon-uri SVG Lucide, textarea și WYSIWYG.
 
 ## Fluxul paralel 1 — activarea Google OAuth real
 

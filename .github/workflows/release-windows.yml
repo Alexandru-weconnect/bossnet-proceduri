@@ -15,7 +15,7 @@ jobs:
     runs-on: windows-latest
     env:
       # OAuth Desktop Client IDs are public identifiers embedded in installed apps.
-      VITE_GOOGLE_CLIENT_ID: 39835539815-j8vqh0shavbck4kq0qlfnkdrf32b7u2g.apps.googleusercontent.com
+      VITE_GOOGLE_CLIENT_ID: 1069295886840-j89jtq5he9i5tjlhjg4sfv0sr6nbt0dg.apps.googleusercontent.com
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,6 +59,8 @@ jobs:
             - PostgreSQL nativ și API securizat, fără date personale în executabil
             - Director organizațional: utilizatori, ierarhie, departamente și telefoane
             - Dashboard Proiect nou / Proiecte existente
+            - Laborator Debug cu dropdown, search, carduri și date pickers
+            - Icon-uri SVG Lucide, textarea și editor WYSIWYG funcțional
             - Inputuri editabile corect în WebView2
             - Reguli overlay, opacitate, gradient și blur configurabile
             - Notificări in-app și native Windows
