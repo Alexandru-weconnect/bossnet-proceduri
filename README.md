@@ -2,17 +2,21 @@
 
 Aplicație desktop Tauri 2 pentru pornirea și urmărirea proiectelor Bossnet. Interfața este compactă, folosește un limbaj vizual nocturn, geometric și include un strat transparent configurabil.
 
-Versiunea `0.4.1` corectează finalizarea loginului pentru noul client Google Desktop: callback-ul local livrează codul temporar aplicației, iar API-ul îl schimbă în siguranță folosind credentialul păstrat exclusiv pe server. Interfața arată separat așteptarea browserului și conectarea sesiunii, cu erori și timeout-uri explicite.
+Versiunea `0.4.2` pornește toate textele funcționale de la 14 px și rearanjează containerele care le decupau. Loginul, meniul compact, setările, laboratorul Debug, ierarhia și cardurile Director au fost verificate la fereastra implicită și la minimul Tauri.
 
 ## Descărcare Windows
 
-- [Descarcă Bossnet Proceduri 0.4.1 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.4.1/Bossnet.Proceduri_0.4.1_x64-setup.exe)
-- [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.4.1)
+- [Descarcă Bossnet Proceduri 0.4.2 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.4.2/Bossnet.Proceduri_0.4.2_x64-setup.exe)
+- [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.4.2)
 
-SHA-256: `6194df7339788e09953df5e38ed988070f7e0c79be9a49195411bfd4ddd00afc`
+SHA-256: se completează după buildul Windows verificat.
 
-## Inclus în versiunea 0.4.1
+## Inclus în versiunea 0.4.2
 
+- toate textele funcționale au minimum 14 px;
+- cardurile, rândurile, formularele și panourile au înălțimi adaptate noii tipografii;
+- loginul și meniul lateral răspund corect la fereastra minimă 820×580;
+- cardurile Director folosesc două coloane, cu emailul pe rând complet, fără suprapuneri;
 - login Google Workspace `@bossnet.ro` în browserul sistemului, cu Authorization Code și PKCE;
 - schimbul codului Google este făcut de API cu credentialul server-side, fără Client Secret în executabil;
 - stări distincte pentru browser/callback/server și timeout-uri explicite în locul unui ecran aparent blocat;
@@ -36,7 +40,7 @@ SHA-256: `6194df7339788e09953df5e38ed988070f7e0c79be9a49195411bfd4ddd00afc`
 
 > Client ID-ul Google Desktop este configurat în installer și în API. Client Secret-ul este configurat numai în mediul privat al API-ului, nu în Git, frontend sau installer.
 
-## Arhitectura 0.4.1
+## Arhitectura 0.4.2
 
 ```text
 Aplicația Windows

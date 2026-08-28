@@ -57,6 +57,7 @@ jobs:
 
             - Login Google Workspace @bossnet.ro cu PKCE, schimb de cod securizat în API și sesiune de 24h
             - Feedback distinct pentru browser, callback și conectarea la server, cu timeout-uri explicite
+            - Tipografie funcțională de minimum 14 px și layout-uri responsive fără texte decupate
             - PostgreSQL nativ și API securizat, fără date personale în executabil
             - Director organizațional: utilizatori, ierarhie, departamente și telefoane
             - Dashboard Proiect nou / Proiecte existente
