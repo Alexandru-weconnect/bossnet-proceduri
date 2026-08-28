@@ -9,6 +9,8 @@ Versiunea publică `0.4.0` folosește Client ID-ul Google Desktop corectat și a
 - [Descarcă Bossnet Proceduri 0.4.0 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.4.0/Bossnet.Proceduri_0.4.0_x64-setup.exe)
 - [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.4.0)
 
+SHA-256: `675f060f85066766fc579e6cdf8c221c9e72d7498f74e7740fe58f2470f76eb6`
+
 ## Inclus în versiunea 0.4.0
 
 - login Google Workspace `@bossnet.ro` în browserul sistemului, cu Authorization Code și PKCE;
