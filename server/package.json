@@ -1,0 +1,37 @@
+{
+  "name": "bossnet-proceduri-api",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/index.ts",
+    "import:organization": "tsx scripts/import-organization.ts",
+    "migrate": "tsx scripts/migrate.ts",
+    "start": "node app.cjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.3.0",
+    "@fastify/helmet": "^13.1.1",
+    "@fastify/rate-limit": "^11.2.0",
+    "exceljs": "^4.4.0",
+    "fastify": "^5.12.1",
+    "google-auth-library": "^11.0.2",
+    "jszip": "^3.10.1",
+    "pg": "^8.23.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "@types/pg": "^8.23.1",
+    "tsx": "^4.23.12",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  }
+}

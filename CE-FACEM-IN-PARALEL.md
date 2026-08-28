@@ -6,28 +6,31 @@ Acest document separă MVP-ul build-uit de integrările care au nevoie de creden
 
 1. Shell Tauri 2 pentru Windows, cu system tray și installer `.exe`.
 2. Identitate vizuală proprie Bossnet: icon hexagonal, negru, alb și gold.
-3. Login mock `@bossnet.ro`, sesiune locală cu TTL de 24h și logout.
+3. Login mock `@bossnet.ro`, limitat la development; fluxul Google Workspace PKCE este implementat și așteaptă Client ID-ul organizației.
 4. Dashboard compact: `Proiect nou` / `Proiecte existente`.
 5. Inițializare proiect pe cele două rute din knowledge base: `CLONE` și `NEW`.
 6. Rezumat procedural pentru Discovery, Preview, QA și Shopify.
 7. Reglaje persistente pentru opacitate, gradient, blur, grilă și estompare la inactivitate.
 8. Regulă nativă „mereu deasupra” și fundal Windows stabil, fără colțuri albe.
 9. Notificări in-app cu istoric și notificări native Windows configurabile.
+10. PostgreSQL 16 nativ, schemă `bossnet`, sesiuni revocabile și API Node.js separat.
+11. Import validat din workbook pentru utilizatori, ierarhie, telefoane, departamente și apartenențe.
+12. Ecran `Echipă` care încarcă directorul numai după autentificare.
 
-## Fluxul paralel 1 — Google OAuth real
+## Fluxul paralel 1 — activarea Google OAuth real
 
-- se creează client OAuth în Google Cloud pentru organizația Bossnet;
-- autentificarea se face în browserul sistemului cu PKCE, nu într-un formular intern;
-- backend-ul verifică `iss`, `aud`, expirarea tokenului și domeniul/hosted domain;
-- accesul este acceptat numai dacă emailul verificat se termină în `@bossnet.ro`;
-- refresh/revocare și logout sunt gestionate server-side;
-- sesiunea aplicației rămâne de 24h, dar nu se bazează pe `localStorage` ca autoritate.
+- se creează un client OAuth de tip **Desktop app** într-un proiect aflat sub organizația Google Workspace Bossnet;
+- ecranul de consimțământ are audiența **Internal** și scope-urile `openid`, `email`, `profile`;
+- autentificarea deja se deschide în browserul sistemului și folosește PKCE, state și nonce;
+- backend-ul verifică semnătura, `iss`, `aud`, expirarea, nonce, `email_verified` și `hd=bossnet.ro`;
+- contul trebuie să corespundă unui utilizator activ din PostgreSQL;
+- logoutul revocă sesiunea opacă de 24h pe server.
 
-Necesare: `GOOGLE_CLIENT_ID`, redirect URI aprobat și endpoint Bossnet pentru schimbul/verificarea tokenului.
+Necesar pentru activare: numai Client ID-ul public `...apps.googleusercontent.com`. Nu este necesar și nu trebuie transmis un Client Secret pentru aplicația desktop.
 
-## Fluxul paralel 2 — sursa reală pentru proiecte și proceduri
+## Fluxul paralel 2 — proiecte și proceduri sincronizate
 
-- alegem API-ul și baza de date;
+- extindem API-ul și schema PostgreSQL deja create;
 - definim roluri: operator, reviewer, admin;
 - migrăm knowledge base-ul în documente versionate;
 - salvăm Project Specification, gate-uri, aprobări și evidence pack;
@@ -43,7 +46,7 @@ Referința Lamborghini cere suprafețe fără gradient. Cerința de proiect cere
 
 ## Definition of done pentru următoarea versiune
 
-- OAuth testat cu un cont real `@bossnet.ro` și cu un cont extern respins;
+- OAuth testat cu un cont real `@bossnet.ro`, un utilizator Bossnet neimportat și un cont extern respins;
 - sesiune revocabilă și expirare verificată server-side;
 - listă de proiecte sincronizată între două dispozitive;
 - procedurile sunt versionate și pot primi status/aprobare;

@@ -34,17 +34,30 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
+      - name: Require Google Desktop Client ID
+        shell: bash
+        env:
+          VITE_GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_DESKTOP_CLIENT_ID }}
+        run: |
+          test -n "$VITE_GOOGLE_CLIENT_ID"
+          [[ "$VITE_GOOGLE_CLIENT_ID" == *.apps.googleusercontent.com ]]
+
       - name: Build and publish release
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VITE_BOSSNET_API_URL: https://proceduri.teambossnet.ro
+          VITE_ENABLE_MOCK_AUTH: "false"
+          VITE_GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_DESKTOP_CLIENT_ID }}
         with:
           tagName: v__VERSION__
           releaseName: "Bossnet Proceduri v__VERSION__"
           releaseBody: |
             Bossnet Proceduri pentru Windows.
 
-            - Login mock @bossnet.ro cu sesiune 24h
+            - Login Google Workspace @bossnet.ro cu PKCE și sesiune server-side de 24h
+            - PostgreSQL nativ și API securizat, fără date personale în executabil
+            - Director organizațional: utilizatori, ierarhie, departamente și telefoane
             - Dashboard Proiect nou / Proiecte existente
             - Inputuri editabile corect în WebView2
             - Reguli overlay, opacitate, gradient și blur configurabile

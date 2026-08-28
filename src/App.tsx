@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { LoginView } from "./components/LoginView";
 import { TitleBar } from "./components/TitleBar";
 import { Workspace } from "./components/Workspace";
-import { clearSession, createSession, readSession } from "./lib/storage";
+import { endServerSession, validateServerSession } from "./lib/api";
+import { clearSession, readSession, saveSession } from "./lib/storage";
 import type { BossnetSession } from "./types";
 
 export default function App() {
@@ -20,11 +21,27 @@ export default function App() {
     return () => window.clearTimeout(timeoutId);
   }, [session]);
 
-  function handleAuthenticated(email: string) {
-    setSession(createSession(email));
+  useEffect(() => {
+    if (!session?.token) return;
+    let cancelled = false;
+
+    void validateServerSession(session.token).catch(() => {
+      if (cancelled) return;
+      clearSession();
+      setSession(null);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session?.token]);
+
+  function handleAuthenticated(nextSession: BossnetSession) {
+    setSession(saveSession(nextSession));
   }
 
   function handleLogout() {
+    if (session?.token) void endServerSession(session.token).catch(() => undefined);
     clearSession();
     setSession(null);
   }

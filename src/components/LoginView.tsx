@@ -1,11 +1,24 @@
 import { useState, type FormEvent } from "react";
+import { invoke } from "@tauri-apps/api/core";
+import { authenticateWithGoogle, GOOGLE_CLIENT_ID, MOCK_AUTH_ENABLED } from "../lib/api";
+import { createMockSession } from "../lib/storage";
+import type { BossnetSession } from "../types";
 import { BrandMark } from "./BrandMark";
 import { Glyph } from "./Glyph";
 
 const BOSSNET_EMAIL = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@bossnet\.ro$/i;
 
 interface LoginViewProps {
-  onAuthenticated: (email: string) => void;
+  onAuthenticated: (session: BossnetSession) => void;
+}
+
+interface GoogleOAuthResult {
+  idToken: string;
+  nonce: string;
+}
+
+function isTauriRuntime(): boolean {
+  return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 }
 
 function GoogleGlyph() {
@@ -20,23 +33,42 @@ function GoogleGlyph() {
 }
 
 export function LoginView({ onAuthenticated }: LoginViewProps) {
-  const [email, setEmail] = useState("test@bossnet.ro");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const normalizedEmail = email.trim().toLowerCase();
-
-    if (!BOSSNET_EMAIL.test(normalizedEmail)) {
-      setError("Folosește o adresă validă care se termină în @bossnet.ro.");
-      return;
-    }
-
     setError("");
     setIsLoading(true);
-    await new Promise((resolve) => window.setTimeout(resolve, 650));
-    onAuthenticated(normalizedEmail);
+
+    try {
+      if (GOOGLE_CLIENT_ID) {
+        if (!isTauriRuntime()) {
+          throw new Error("Loginul Google se deschide din aplicația Windows instalată.");
+        }
+        const oauth = await invoke<GoogleOAuthResult>("google_oauth_login", {
+          clientId: GOOGLE_CLIENT_ID,
+          hostedDomain: "bossnet.ro",
+        });
+        onAuthenticated(await authenticateWithGoogle(oauth.idToken, oauth.nonce));
+        return;
+      }
+
+      const normalizedEmail = email.trim().toLowerCase();
+      if (!MOCK_AUTH_ENABLED) {
+        throw new Error("Clientul Google OAuth nu este configurat în acest build.");
+      }
+      if (!BOSSNET_EMAIL.test(normalizedEmail)) {
+        throw new Error("Folosește o adresă validă care se termină în @bossnet.ro.");
+      }
+
+      await new Promise((resolve) => window.setTimeout(resolve, 420));
+      onAuthenticated(createMockSession(normalizedEmail));
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : "Autentificarea nu a reușit.");
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -72,6 +104,7 @@ export function LoginView({ onAuthenticated }: LoginViewProps) {
               <Glyph name="user" size={18} />
               <input
                 autoComplete="email"
+                disabled={Boolean(GOOGLE_CLIENT_ID)}
                 id="email"
                 inputMode="email"
                 onChange={(event) => {
@@ -80,7 +113,7 @@ export function LoginView({ onAuthenticated }: LoginViewProps) {
                 }}
                 spellCheck="false"
                 type="email"
-                value={email}
+                value={GOOGLE_CLIENT_ID ? "Google Workspace · bossnet.ro" : email}
               />
               <span>DOMENIU INTERN</span>
             </div>
@@ -94,8 +127,8 @@ export function LoginView({ onAuthenticated }: LoginViewProps) {
           </form>
 
           <div className="login-card__status">
-            <span><i /> MOD TEST</span>
-            <span>OAUTH GOOGLE · URMEAZĂ</span>
+            <span><i /> {GOOGLE_CLIENT_ID ? "GOOGLE WORKSPACE" : "MOD TEST"}</span>
+            <span>{GOOGLE_CLIENT_ID ? "PKCE · BROWSER SISTEM" : "OAUTH GOOGLE · NECONFIGURAT"}</span>
           </div>
         </div>
       </section>

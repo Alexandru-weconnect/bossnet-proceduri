@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { lazy, Suspense, useEffect, useState, type FormEvent } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   isPermissionGranted,
@@ -23,7 +23,12 @@ import type {
 import { BrandMark } from "./BrandMark";
 import { Glyph, type GlyphName } from "./Glyph";
 
-type WorkspaceView = "dashboard" | "new-project" | "projects" | "procedures";
+type WorkspaceView = "dashboard" | "new-project" | "people" | "projects" | "procedures";
+
+const PeopleView = lazy(async () => {
+  const module = await import("./PeopleView");
+  return { default: module.PeopleView };
+});
 
 interface WorkspaceProps {
   session: BossnetSession;
@@ -104,12 +109,14 @@ function MainHeader({
   notificationCount,
   onOpenNotifications,
   onOpenSettings,
+  syncLabel,
 }: {
   label: string;
   title: string;
   notificationCount: number;
   onOpenNotifications: () => void;
   onOpenSettings: () => void;
+  syncLabel: string;
 }) {
   return (
     <header className="main-header">
@@ -118,7 +125,7 @@ function MainHeader({
         <h1>{title}</h1>
       </div>
       <div className="main-header__actions">
-        <span className="sync-state"><i /> LOCAL / SINCRONIZAT</span>
+        <span className="sync-state"><i /> {syncLabel}</span>
         <button
           aria-label={`${notificationCount} notificări`}
           className="icon-button notification-button"
@@ -647,6 +654,7 @@ function NotificationPanel({
 const NAV_ITEMS: Array<{ view: WorkspaceView; label: string; icon: GlyphName }> = [
   { view: "dashboard", label: "Start", icon: "home" },
   { view: "projects", label: "Proiecte", icon: "grid" },
+  { view: "people", label: "Echipă", icon: "user" },
   { view: "procedures", label: "Proceduri", icon: "layers" },
 ];
 
@@ -794,7 +802,9 @@ export function Workspace({ session, onLogout }: WorkspaceProps) {
         ? "INIȚIALIZARE"
         : view === "projects"
           ? "REGISTRU PROIECTE"
-          : "KNOWLEDGE BASE";
+          : view === "people"
+            ? "ORGANIZAȚIE"
+            : "KNOWLEDGE BASE";
 
   return (
     <div className={appearance.dimWhenInactive && !windowFocused ? "workspace workspace--dimmed" : "workspace"}>
@@ -840,7 +850,7 @@ export function Workspace({ session, onLogout }: WorkspaceProps) {
           </button>
           <div className="account-block">
             <span className="account-block__avatar">{session.email.slice(0, 1).toUpperCase()}</span>
-            <div><strong>{session.email.split("@")[0]}</strong><span>@bossnet.ro</span></div>
+            <div><strong>{session.name}</strong><span>{session.authMode === "google" ? "GOOGLE WORKSPACE" : "MOD TEST"}</span></div>
             <button aria-label="Deconectare" onClick={onLogout} type="button"><Glyph name="logout" size={17} /></button>
           </div>
         </div>
@@ -858,12 +868,18 @@ export function Workspace({ session, onLogout }: WorkspaceProps) {
             setNotificationsOpen(false);
             setSettingsOpen(true);
           }}
+          syncLabel={session.token ? "SERVER / SINCRONIZAT" : "LOCAL / MOD TEST"}
           title={headerTitle}
         />
         <div className="workspace-content">
           {view === "dashboard" ? <DashboardView onNavigate={setView} /> : null}
           {view === "new-project" ? <NewProjectView onCancel={() => setView("dashboard")} onCreate={addProject} /> : null}
           {view === "projects" ? <ProjectsView onNew={() => setView("new-project")} projects={projects} /> : null}
+          {view === "people" ? (
+            <Suspense fallback={<div className="people-loading"><span className="button-loader" /><strong>SE ÎNCARCĂ DIRECTORUL</strong></div>}>
+              <PeopleView session={session} />
+            </Suspense>
+          ) : null}
           {view === "procedures" ? <ProceduresView /> : null}
         </div>
       </main>

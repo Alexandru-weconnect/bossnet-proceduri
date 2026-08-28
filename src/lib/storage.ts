@@ -1,6 +1,6 @@
 import type { AppearanceSettings, BossnetProject, BossnetSession } from "../types";
 
-const SESSION_KEY = "bossnet:session:v1";
+const SESSION_KEY = "bossnet:session:v2";
 const PROJECTS_KEY = "bossnet:projects:v1";
 const APPEARANCE_KEY = "bossnet:appearance:v1";
 const SESSION_DURATION_MS = 24 * 60 * 60 * 1000;
@@ -37,7 +37,14 @@ function writeJson(key: string, value: unknown): void {
 export function readSession(): BossnetSession | null {
   const session = readJson<BossnetSession>(SESSION_KEY);
 
-  if (!session || typeof session.email !== "string" || typeof session.expiresAt !== "number") {
+  if (
+    !session
+    || typeof session.email !== "string"
+    || typeof session.expiresAt !== "number"
+    || (session.authMode !== "google" && session.authMode !== "mock")
+    || (session.systemRole !== "admin" && session.systemRole !== "editor")
+    || (typeof session.token !== "string" && session.token !== null)
+  ) {
     return null;
   }
 
@@ -49,11 +56,20 @@ export function readSession(): BossnetSession | null {
   return session;
 }
 
-export function createSession(email: string): BossnetSession {
+export function createMockSession(email: string): BossnetSession {
   const session: BossnetSession = {
+    authMode: "mock",
     email: email.toLowerCase(),
     expiresAt: Date.now() + SESSION_DURATION_MS,
+    name: email.split("@")[0] ?? email,
+    systemRole: "editor",
+    token: null,
   };
+  writeJson(SESSION_KEY, session);
+  return session;
+}
+
+export function saveSession(session: BossnetSession): BossnetSession {
   writeJson(SESSION_KEY, session);
   return session;
 }
