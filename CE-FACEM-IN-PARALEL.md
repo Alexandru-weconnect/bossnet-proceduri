@@ -6,7 +6,7 @@ Acest document separă MVP-ul build-uit de integrările care au nevoie de creden
 
 1. Shell Tauri 2 pentru Windows, cu system tray și installer `.exe`.
 2. Identitate vizuală proprie Bossnet: icon hexagonal, negru, alb și gold.
-3. Login mock `@bossnet.ro`, limitat la development; fluxul Google Workspace PKCE este implementat și așteaptă Client ID-ul organizației.
+3. Login mock `@bossnet.ro`, limitat la development; fluxul Google Workspace PKCE și Client ID-ul Desktop al organizației sunt configurate, în așteptarea testului interactiv cu un cont real.
 4. Dashboard compact: `Proiect nou` / `Proiecte existente`.
 5. Inițializare proiect pe cele două rute din knowledge base: `CLONE` și `NEW`.
 6. Rezumat procedural pentru Discovery, Preview, QA și Shopify.
@@ -25,8 +25,9 @@ Acest document separă MVP-ul build-uit de integrările care au nevoie de creden
 - backend-ul verifică semnătura, `iss`, `aud`, expirarea, nonce, `email_verified` și `hd=bossnet.ro`;
 - contul trebuie să corespundă unui utilizator activ din PostgreSQL;
 - logoutul revocă sesiunea opacă de 24h pe server.
+- Client ID-ul Desktop este configurat atât în API, cât și în build-ul Windows; Client Secret-ul nu este folosit de aplicația publică.
 
-Necesar pentru activare: numai Client ID-ul public `...apps.googleusercontent.com`. Nu este necesar și nu trebuie transmis un Client Secret pentru aplicația desktop.
+Rămas pentru validarea finală: testul interactiv cu un cont real importat `@bossnet.ro`, plus verificarea politicii **Internal** din Google Auth Platform. Nu este necesar și nu trebuie folosit un Client Secret pentru aplicația desktop.
 
 ## Fluxul paralel 2 — proiecte și proceduri sincronizate
 

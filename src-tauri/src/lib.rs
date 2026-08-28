@@ -89,7 +89,7 @@ fn wait_for_oauth_callback(
 
         let callback_url = Url::parse(&format!("http://127.0.0.1{target}"))
             .map_err(|_| "Callback Google invalid".to_string())?;
-        if callback_url.path() != "/callback" {
+        if callback_url.path() != "/" {
             write_browser_response(
                 &mut stream,
                 "404 Not Found",
@@ -160,7 +160,7 @@ async fn google_oauth_login(
         .local_addr()
         .map_err(|_| "Portul callback OAuth nu este disponibil".to_string())?
         .port();
-    let redirect_uri = format!("http://127.0.0.1:{port}/callback");
+    let redirect_uri = format!("http://127.0.0.1:{port}");
     let state = random_urlsafe(32);
     let nonce = random_urlsafe(32);
     let code_verifier = random_urlsafe(64);

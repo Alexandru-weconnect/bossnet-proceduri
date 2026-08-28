@@ -13,6 +13,9 @@ jobs:
   build-windows:
     name: Build Windows installer
     runs-on: windows-latest
+    env:
+      # OAuth Desktop Client IDs are public identifiers embedded in installed apps.
+      VITE_GOOGLE_CLIENT_ID: 39835539815-j8vqh0shavbck4kq0qlfnkdrf32b7u2g.apps.googleusercontent.com
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,8 +39,6 @@ jobs:
 
       - name: Require Google Desktop Client ID
         shell: bash
-        env:
-          VITE_GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_DESKTOP_CLIENT_ID }}
         run: |
           test -n "$VITE_GOOGLE_CLIENT_ID"
           [[ "$VITE_GOOGLE_CLIENT_ID" == *.apps.googleusercontent.com ]]
@@ -48,7 +49,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VITE_BOSSNET_API_URL: https://proceduri.teambossnet.ro
           VITE_ENABLE_MOCK_AUTH: "false"
-          VITE_GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_DESKTOP_CLIENT_ID }}
         with:
           tagName: v__VERSION__
           releaseName: "Bossnet Proceduri v__VERSION__"

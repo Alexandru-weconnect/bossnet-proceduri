@@ -39,12 +39,12 @@ GOOGLE_DESKTOP_CLIENT_ID=000000000000-xxxxxxxxxxxxxxxx.apps.googleusercontent.co
 
 Client ID-ul nu este secret și poate fi transmis în conversație. Nu trimite Client Secret, parola Google, cookie-uri sau coduri 2FA.
 
-Valoarea va fi configurată în două locuri:
+Valoarea este configurată în două locuri:
 
 - API: `GOOGLE_CLIENT_ID`;
-- GitHub Actions repository variable: `GOOGLE_DESKTOP_CLIENT_ID`.
+- workflow-ul GitHub Actions: `VITE_GOOGLE_CLIENT_ID`, ca identificator public inclus în build.
 
-Ambele trebuie să fie identice. După configurare se construiește installerul `0.3.0`.
+Ambele trebuie să fie identice. Client ID-ul primit pentru aplicația Desktop a fost configurat la 28 august 2026; Client Secret-ul din fișierul descărcat nu este utilizat și nu intră în repository, API sau installer. Urmează construirea și testarea interactivă a installerului `0.3.0`.
 
 ## Dacă organizația blochează aplicația
 
