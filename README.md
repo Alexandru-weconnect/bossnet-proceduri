@@ -9,7 +9,7 @@ Versiunea `0.4.2` pornește toate textele funcționale de la 14 px și rearanjea
 - [Descarcă Bossnet Proceduri 0.4.2 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.4.2/Bossnet.Proceduri_0.4.2_x64-setup.exe)
 - [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.4.2)
 
-SHA-256: se completează după buildul Windows verificat.
+SHA-256: `e6db6e41cf647e740655083a52459b46eaae55e93ff619ce3556c7fa40a11bb9`
 
 ## Inclus în versiunea 0.4.2
 
