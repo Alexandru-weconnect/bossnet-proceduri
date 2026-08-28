@@ -1,6 +1,6 @@
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use rand::{rngs::OsRng, RngCore};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use sha2::{Digest, Sha256};
 use std::{
     io::{ErrorKind, Read, Write},
@@ -16,21 +16,15 @@ use tauri::{
 use url::Url;
 
 const GOOGLE_AUTH_URL: &str = "https://accounts.google.com/o/oauth2/v2/auth";
-const GOOGLE_TOKEN_URL: &str = "https://oauth2.googleapis.com/token";
-const OAUTH_TIMEOUT: Duration = Duration::from_secs(300);
+const OAUTH_TIMEOUT: Duration = Duration::from_secs(180);
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 struct GoogleOAuthResult {
-    id_token: String,
+    authorization_code: String,
+    code_verifier: String,
+    redirect_uri: String,
     nonce: String,
-}
-
-#[derive(Deserialize)]
-struct GoogleTokenResponse {
-    error: Option<String>,
-    error_description: Option<String>,
-    id_token: Option<String>,
 }
 
 fn random_urlsafe(byte_count: usize) -> String {
@@ -139,7 +133,7 @@ fn wait_for_oauth_callback(
         return Ok(code);
     }
 
-    Err("Autentificarea Google a expirat după 5 minute".to_string())
+    Err("Autentificarea Google a expirat după 3 minute. Reîncearcă din aplicație.".to_string())
 }
 
 #[tauri::command]
@@ -191,37 +185,12 @@ async fn google_oauth_login(
     .await
     .map_err(|_| "Procesul OAuth local a fost întrerupt".to_string())??;
 
-    let response = reqwest::Client::new()
-        .post(GOOGLE_TOKEN_URL)
-        .form(&[
-            ("client_id", client_id.as_str()),
-            ("code", authorization_code.as_str()),
-            ("code_verifier", code_verifier.as_str()),
-            ("grant_type", "authorization_code"),
-            ("redirect_uri", redirect_uri.as_str()),
-        ])
-        .send()
-        .await
-        .map_err(|_| "Schimbul codului Google nu a putut fi efectuat".to_string())?;
-
-    let status = response.status();
-    let token_response = response
-        .json::<GoogleTokenResponse>()
-        .await
-        .map_err(|_| "Răspunsul token Google este invalid".to_string())?;
-    if !status.is_success() {
-        return Err(token_response
-            .error_description
-            .or(token_response.error)
-            .unwrap_or_else(|| "Google a refuzat schimbul codului OAuth".to_string()));
-    }
-
-    let id_token = token_response
-        .id_token
-        .filter(|token| token.len() >= 100)
-        .ok_or_else(|| "Google nu a returnat un ID token".to_string())?;
-
-    Ok(GoogleOAuthResult { id_token, nonce })
+    Ok(GoogleOAuthResult {
+        authorization_code,
+        code_verifier,
+        redirect_uri,
+        nonce,
+    })
 }
 
 fn show_main_window(app: &AppHandle) {

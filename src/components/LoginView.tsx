@@ -1,6 +1,11 @@
 import { useState, type FormEvent } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { authenticateWithGoogle, GOOGLE_CLIENT_ID, MOCK_AUTH_ENABLED } from "../lib/api";
+import {
+  authenticateWithGoogle,
+  GOOGLE_CLIENT_ID,
+  MOCK_AUTH_ENABLED,
+  type GoogleAuthorization,
+} from "../lib/api";
 import { createMockSession } from "../lib/storage";
 import type { BossnetSession } from "../types";
 import { BrandMark } from "./BrandMark";
@@ -12,9 +17,32 @@ interface LoginViewProps {
   onAuthenticated: (session: BossnetSession) => void;
 }
 
-interface GoogleOAuthResult {
-  idToken: string;
-  nonce: string;
+type AuthStage = "idle" | "browser" | "server";
+
+const AUTH_STAGE_COPY: Record<Exclude<AuthStage, "idle">, { button: string; message: string }> = {
+  browser: {
+    button: "AȘTEPT CONFIRMAREA GOOGLE",
+    message: "Finalizează autentificarea în browser. Revenirea în aplicație este automată.",
+  },
+  server: {
+    button: "CONECTEZ SESIUNEA",
+    message: "Google a confirmat contul. Se creează sesiunea Bossnet de 24 de ore.",
+  },
+};
+
+function authErrorMessage(error: unknown): string {
+  if (typeof error === "string" && error.trim()) return error;
+  if (error instanceof Error && error.message.trim()) return error.message;
+  if (
+    typeof error === "object"
+    && error !== null
+    && "message" in error
+    && typeof error.message === "string"
+    && error.message.trim()
+  ) {
+    return error.message;
+  }
+  return "Autentificarea nu a reușit. Reîncearcă din aplicație.";
 }
 
 function isTauriRuntime(): boolean {
@@ -35,23 +63,25 @@ function GoogleGlyph() {
 export function LoginView({ onAuthenticated }: LoginViewProps) {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [authStage, setAuthStage] = useState<AuthStage>("idle");
+  const isLoading = authStage !== "idle";
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-    setIsLoading(true);
 
     try {
       if (GOOGLE_CLIENT_ID) {
         if (!isTauriRuntime()) {
           throw new Error("Loginul Google se deschide din aplicația Windows instalată.");
         }
-        const oauth = await invoke<GoogleOAuthResult>("google_oauth_login", {
+        setAuthStage("browser");
+        const oauth = await invoke<GoogleAuthorization>("google_oauth_login", {
           clientId: GOOGLE_CLIENT_ID,
           hostedDomain: "bossnet.ro",
         });
-        onAuthenticated(await authenticateWithGoogle(oauth.idToken, oauth.nonce));
+        setAuthStage("server");
+        onAuthenticated(await authenticateWithGoogle(oauth));
         return;
       }
 
@@ -63,13 +93,22 @@ export function LoginView({ onAuthenticated }: LoginViewProps) {
         throw new Error("Folosește o adresă validă care se termină în @bossnet.ro.");
       }
 
+      setAuthStage("server");
       await new Promise((resolve) => window.setTimeout(resolve, 420));
       onAuthenticated(createMockSession(normalizedEmail));
     } catch (caughtError) {
-      setError(caughtError instanceof Error ? caughtError.message : "Autentificarea nu a reușit.");
-      setIsLoading(false);
+      setError(authErrorMessage(caughtError));
+      setAuthStage("idle");
     }
   }
+
+  const statusMessage = error
+    || (authStage === "idle"
+      ? "Sesiunea rămâne activă 24 de ore."
+      : AUTH_STAGE_COPY[authStage].message);
+  const buttonLabel = authStage === "idle"
+    ? "CONTINUĂ CU GOOGLE"
+    : AUTH_STAGE_COPY[authStage].button;
 
   return (
     <main className="login" aria-labelledby="login-title">
@@ -117,11 +156,21 @@ export function LoginView({ onAuthenticated }: LoginViewProps) {
               />
               <span>DOMENIU INTERN</span>
             </div>
-            <div className="field-message" aria-live="polite">{error || "Sesiunea rămâne activă 24 de ore."}</div>
+            <div
+              className={`field-message ${isLoading ? "field-message--active" : ""}`}
+              aria-live="polite"
+            >
+              {statusMessage}
+            </div>
 
-            <button className="google-button" disabled={isLoading} type="submit">
+            <button
+              aria-busy={isLoading}
+              className="google-button"
+              disabled={isLoading}
+              type="submit"
+            >
               {isLoading ? <span className="button-loader" /> : <GoogleGlyph />}
-              <span>{isLoading ? "SE DESCHIDE SESIUNEA" : "CONTINUĂ CU GOOGLE"}</span>
+              <span>{buttonLabel}</span>
               <Glyph name="arrow" size={17} />
             </button>
           </form>

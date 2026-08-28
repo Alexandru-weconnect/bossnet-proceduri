@@ -1,6 +1,6 @@
 [package]
 name = "bossnet-proceduri"
-version = "0.4.0"
+version = "0.4.1"
 description = "Bossnet Proceduri desktop"
 authors = ["Bossnet"]
 edition = "2021"
@@ -16,7 +16,6 @@ tauri-build = { version = "2", features = [] }
 base64 = "0.22"
 open = { version = "5.4", features = ["shellexecute-on-windows"] }
 rand = "0.8"
-reqwest = { version = "0.12", features = ["json"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 sha2 = "0.10"

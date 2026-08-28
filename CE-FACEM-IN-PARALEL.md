@@ -23,12 +23,13 @@ Acest document separă MVP-ul build-uit de integrările care au nevoie de creden
 - se creează un client OAuth de tip **Desktop app** într-un proiect aflat sub organizația Google Workspace Bossnet;
 - ecranul de consimțământ are audiența **Internal** și scope-urile `openid`, `email`, `profile`;
 - autentificarea deja se deschide în browserul sistemului și folosește PKCE, state și nonce;
+- API-ul schimbă Authorization Code-ul folosind PKCE și Client Secret-ul păstrat exclusiv server-side;
 - backend-ul verifică semnătura, `iss`, `aud`, expirarea, nonce, `email_verified` și `hd=bossnet.ro`;
 - contul trebuie să corespundă unui utilizator activ din PostgreSQL;
 - logoutul revocă sesiunea opacă de 24h pe server.
-- Client ID-ul Desktop este configurat atât în API, cât și în build-ul Windows; Client Secret-ul nu este folosit de aplicația publică.
+- Client ID-ul Desktop este configurat atât în API, cât și în build-ul Windows; Client Secret-ul este folosit numai de API și nu intră în aplicația publică.
 
-Rămas pentru validarea finală: testul interactiv cu un cont real importat `@bossnet.ro`, plus verificarea politicii **Internal** din Google Auth Platform. Nu este necesar și nu trebuie folosit un Client Secret pentru aplicația desktop.
+Rămas pentru validarea finală: testul interactiv cu un cont real importat `@bossnet.ro`, plus verificarea politicii **Internal** din Google Auth Platform.
 
 ## Fluxul paralel 2 — proiecte și proceduri sincronizate
 

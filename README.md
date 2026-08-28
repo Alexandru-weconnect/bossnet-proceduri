@@ -2,18 +2,20 @@
 
 Aplicație desktop Tauri 2 pentru pornirea și urmărirea proiectelor Bossnet. Interfața este compactă, folosește un limbaj vizual nocturn, geometric și include un strat transparent configurabil.
 
-Versiunea publică `0.4.0` folosește Client ID-ul Google Desktop corectat și adaugă un laborator separat `Debug` pentru verificarea componentelor în WebView2. PostgreSQL nativ, API-ul securizat și directorul organizațional rămân integrate; datele personale nu intră în repository sau în executabil.
+Versiunea `0.4.1` corectează finalizarea loginului pentru noul client Google Desktop: callback-ul local livrează codul temporar aplicației, iar API-ul îl schimbă în siguranță folosind credentialul păstrat exclusiv pe server. Interfața arată separat așteptarea browserului și conectarea sesiunii, cu erori și timeout-uri explicite.
 
 ## Descărcare Windows
 
-- [Descarcă Bossnet Proceduri 0.4.0 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.4.0/Bossnet.Proceduri_0.4.0_x64-setup.exe)
-- [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.4.0)
+- [Descarcă Bossnet Proceduri 0.4.1 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.4.1/Bossnet.Proceduri_0.4.1_x64-setup.exe)
+- [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.4.1)
 
-SHA-256: `675f060f85066766fc579e6cdf8c221c9e72d7498f74e7740fe58f2470f76eb6`
+SHA-256: se publică după verificarea installerului generat de GitHub Actions.
 
-## Inclus în versiunea 0.4.0
+## Inclus în versiunea 0.4.1
 
 - login Google Workspace `@bossnet.ro` în browserul sistemului, cu Authorization Code și PKCE;
+- schimbul codului Google este făcut de API cu credentialul server-side, fără Client Secret în executabil;
+- stări distincte pentru browser/callback/server și timeout-uri explicite în locul unui ecran aparent blocat;
 - sesiune opacă server-side de 24 de ore, revocabilă și cu expirare automată;
 - API HTTPS conectat la PostgreSQL 16 nativ, fără Docker;
 - director organizațional protejat cu utilizatori, ierarhie, departamente și telefoane importate;
@@ -32,14 +34,15 @@ SHA-256: `675f060f85066766fc579e6cdf8c221c9e72d7498f74e7740fe58f2470f76eb6`
 - închiderea ferestrei o ascunde în tray; aplicația se oprește din meniul tray;
 - installer Windows NSIS generat în GitHub Actions.
 
-> Client ID-ul Google Desktop este configurat în installer și în API. Acceptanța interactivă trebuie făcută cu un cont activ `@bossnet.ro` care există în directorul importat.
+> Client ID-ul Google Desktop este configurat în installer și în API. Client Secret-ul este configurat numai în mediul privat al API-ului, nu în Git, frontend sau installer.
 
-## Arhitectura 0.4.0
+## Arhitectura 0.4.1
 
 ```text
 Aplicația Windows
   └─ Google OAuth în browserul sistemului (Authorization Code + PKCE)
       └─ API Bossnet / HTTPS
+          ├─ schimbă codul temporar folosind credentialul Google server-side
           ├─ verifică ID token, nonce, audiență și hosted domain bossnet.ro
           ├─ emite o sesiune opacă, revocabilă, valabilă 24h
           └─ citește PostgreSQL nativ de pe server
@@ -58,7 +61,7 @@ npm install
 npm run tauri dev
 ```
 
-Copiază `.env.example` în `.env.local` și completează URL-ul API plus Client ID-ul Google Desktop. Client ID-ul nu este secret; parolele DB și tokenurile nu se pun în fișierele frontend.
+Copiază `.env.example` în `.env.local` și completează URL-ul API plus Client ID-ul Google Desktop. Client ID-ul nu este secret; Client Secret-ul, parolele DB și tokenurile nu se pun în fișierele frontend.
 
 Build frontend:
 
@@ -87,6 +90,6 @@ Activarea contului Google este documentată pas cu pas în [`GOOGLE-OAUTH-SETUP.
 
 ## Securitate și date
 
-Aplicația păstrează local tokenul opac al sesiunii Bossnet, expirarea, identitatea afișată, preferințele de interfață/notificare și proiectele mock. ID tokenul Google și parolele nu sunt persistate. Sesiunea este validată și poate fi revocată de API.
+Aplicația păstrează local tokenul opac al sesiunii Bossnet, expirarea, identitatea afișată, preferințele de interfață/notificare și proiectele mock. Codul Google, PKCE verifier-ul, ID tokenul și parolele nu sunt persistate. Sesiunea este validată și poate fi revocată de API.
 
 Installerul public este nesemnat în această etapă, deci Windows SmartScreen poate afișa „Unknown publisher”. Certificarea oficială este pasul separat documentat în roadmap.

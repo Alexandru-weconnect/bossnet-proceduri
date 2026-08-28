@@ -1,6 +1,6 @@
 # Google Workspace OAuth — Bossnet Proceduri
 
-Aplicația folosește Authorization Code cu PKCE în browserul sistemului. Pentru un client de tip Desktop, Client ID-ul este public, iar aplicația nu trebuie să păstreze un Client Secret.
+Aplicația folosește Authorization Code cu PKCE în browserul sistemului. Client ID-ul Desktop este public și intră în build. Pentru clientul Bossnet curent, endpointul Google solicită și Client Secret la schimbul codului; acesta este păstrat numai în mediul privat al API-ului și nu intră în aplicația Windows sau în repository.
 
 ## Contul necesar
 
@@ -25,26 +25,27 @@ Nu trimite parola contului Google. Dacă în pagina de audiență nu apare opți
 7. Deschide [Google Auth Platform → Clients](https://console.cloud.google.com/auth/clients), apoi **Create client**:
    - Application type: **Desktop app**;
    - Name: `Bossnet Proceduri Windows`.
-8. Copiază valoarea **Client ID**, care se termină în `.apps.googleusercontent.com`.
+8. Descarcă fișierul JSON al clientului. **Client ID** este configurat în build, iar **Client Secret** este configurat separat în secret store-ul API-ului.
 
 Pentru un client Desktop, callback-ul pe IP loopback `127.0.0.1` și port dinamic este mecanismul corect; nu trebuie creat un redirect web fix pentru aplicația Tauri.
 
 ## Ce trebuie trimis pentru activare
 
-Trimite numai:
+Pentru build este necesară numai valoarea publică:
 
 ```text
 GOOGLE_DESKTOP_CLIENT_ID=000000000000-xxxxxxxxxxxxxxxx.apps.googleusercontent.com
 ```
 
-Client ID-ul nu este secret și poate fi transmis în conversație. Nu trimite Client Secret, parola Google, cookie-uri sau coduri 2FA.
+Client ID-ul nu este secret. Client Secret-ul se încarcă direct în mediul securizat al API-ului; nu se commit-uiește, nu se pune în GitHub Actions și nu se include în executabil. Nu transmite parola Google, cookie-uri sau coduri 2FA.
 
-Valoarea este configurată în două locuri:
+Configurația este împărțită astfel:
 
 - API: `GOOGLE_CLIENT_ID`;
+- API secret store: `GOOGLE_CLIENT_SECRET`;
 - workflow-ul GitHub Actions: `VITE_GOOGLE_CLIENT_ID`, ca identificator public inclus în build.
 
-Ambele trebuie să fie identice. Client ID-ul Desktop corectat a fost configurat la 28 august 2026; Client Secret-ul din fișierul descărcat nu este utilizat și nu intră în repository, API sau installer. Installerul `0.4.0` folosește această configurație; a rămas testul interactiv cu un cont real.
+Client ID-ul din API și cel din build trebuie să fie identice. Credentialul Desktop corectat a fost configurat la 28 august 2026; Client Secret-ul este prezent numai în mediul Passenger al API-ului. Installerul `0.4.1` nu îl conține.
 
 ## Dacă organizația blochează aplicația
 

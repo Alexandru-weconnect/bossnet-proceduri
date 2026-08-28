@@ -11,6 +11,13 @@ interface ApiSessionResponse {
   };
 }
 
+export interface GoogleAuthorization {
+  authorizationCode: string;
+  codeVerifier: string;
+  nonce: string;
+  redirectUri: string;
+}
+
 export const API_BASE_URL = (import.meta.env.VITE_BOSSNET_API_URL ?? "").replace(/\/$/, "");
 export const GOOGLE_CLIENT_ID = (import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "").trim();
 export const MOCK_AUTH_ENABLED =
@@ -28,7 +35,34 @@ async function apiRequest<T>(
   if (init.body) headers.set("Content-Type", "application/json");
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
-  const response = await fetch(`${API_BASE_URL}${path}`, { ...init, headers });
+  const controller = new AbortController();
+  let timedOut = false;
+  const abortFromCaller = () => controller.abort();
+  if (init.signal?.aborted) controller.abort();
+  else init.signal?.addEventListener("abort", abortFromCaller, { once: true });
+  const timeoutId = globalThis.setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, 20_000);
+
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...init,
+      headers,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (timedOut) {
+      throw new Error("Serverul Bossnet nu a răspuns în 20 de secunde. Verifică internetul și reîncearcă.");
+    }
+    if (init.signal?.aborted) throw error;
+    throw new Error("API-ul Bossnet nu poate fi contactat. Verifică internetul și reîncearcă.");
+  } finally {
+    globalThis.clearTimeout(timeoutId);
+    init.signal?.removeEventListener("abort", abortFromCaller);
+  }
+
   if (response.status === 204) return undefined as T;
 
   const payload = await response.json().catch(() => ({ error: "Răspuns API invalid" })) as { error?: string };
@@ -47,9 +81,11 @@ function toSession(response: ApiSessionResponse): BossnetSession {
   };
 }
 
-export async function authenticateWithGoogle(idToken: string, nonce: string): Promise<BossnetSession> {
+export async function authenticateWithGoogle(
+  authorization: GoogleAuthorization,
+): Promise<BossnetSession> {
   const response = await apiRequest<ApiSessionResponse>("/v1/auth/google", {
-    body: JSON.stringify({ idToken, nonce }),
+    body: JSON.stringify(authorization),
     method: "POST",
   });
   return toSession(response);

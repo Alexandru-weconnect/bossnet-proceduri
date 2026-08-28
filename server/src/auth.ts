@@ -6,9 +6,38 @@ import { config } from "./config.js";
 import { pool, query, withTransaction } from "./db.js";
 import type { SessionUser } from "./types.js";
 
-const googlePayloadSchema = z.object({
-  idToken: z.string().min(100),
+const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
+const PKCE_VERIFIER = /^[A-Za-z0-9._~-]+$/;
+
+function isSafeLoopbackRedirect(value: string): boolean {
+  try {
+    const url = new URL(value);
+    const port = Number(url.port);
+    return url.protocol === "http:"
+      && url.hostname === "127.0.0.1"
+      && Number.isInteger(port)
+      && port >= 1024
+      && port <= 65535
+      && url.pathname === "/"
+      && !url.search
+      && !url.hash
+      && !url.username
+      && !url.password;
+  } catch {
+    return false;
+  }
+}
+
+const googleAuthorizationSchema = z.object({
+  authorizationCode: z.string().min(16).max(4096),
+  codeVerifier: z.string().min(43).max(128).regex(PKCE_VERIFIER),
   nonce: z.string().min(16).max(256),
+  redirectUri: z.string().max(128).refine(isSafeLoopbackRedirect),
+});
+
+const googleTokenResponseSchema = z.object({
+  error: z.string().optional(),
+  id_token: z.string().min(100).optional(),
 });
 
 const mockPayloadSchema = z.object({
@@ -28,6 +57,76 @@ interface SessionRow extends UserRow {
 }
 
 const oauthClient = config.googleClientId ? new OAuth2Client(config.googleClientId) : null;
+
+async function exchangeGoogleAuthorization(
+  authorization: z.infer<typeof googleAuthorizationSchema>,
+) {
+  if (!config.googleClientId || !config.googleClientSecret) {
+    return {
+      error: "Google OAuth nu este configurat complet pe server",
+      ok: false,
+      status: 503,
+    } as const;
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(GOOGLE_TOKEN_URL, {
+      body: new URLSearchParams({
+        client_id: config.googleClientId,
+        client_secret: config.googleClientSecret,
+        code: authorization.authorizationCode,
+        code_verifier: authorization.codeVerifier,
+        grant_type: "authorization_code",
+        redirect_uri: authorization.redirectUri,
+      }),
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      method: "POST",
+      signal: AbortSignal.timeout(15_000),
+    });
+  } catch {
+    return {
+      error: "Google nu a răspuns la schimbul de autorizare",
+      ok: false,
+      status: 502,
+    } as const;
+  }
+
+  const rawPayload: unknown = await response.json().catch(() => null);
+  const tokenPayload = googleTokenResponseSchema.safeParse(rawPayload);
+  if (!response.ok) {
+    const googleError = tokenPayload.success ? tokenPayload.data.error : null;
+    if (googleError === "invalid_grant") {
+      return {
+        error: "Codul Google a expirat sau a fost deja folosit. Reîncearcă autentificarea.",
+        ok: false,
+        status: 401,
+      } as const;
+    }
+    if (googleError === "invalid_client") {
+      return {
+        error: "Configurația Google a serverului este invalidă",
+        ok: false,
+        status: 503,
+      } as const;
+    }
+    return {
+      error: "Google a refuzat schimbul de autorizare",
+      ok: false,
+      status: 502,
+    } as const;
+  }
+
+  const idToken = tokenPayload.success ? tokenPayload.data.id_token : null;
+  if (!idToken) {
+    return {
+      error: "Google nu a returnat identitatea utilizatorului",
+      ok: false,
+      status: 502,
+    } as const;
+  }
+  return { idToken, ok: true } as const;
+}
 
 function hashToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
@@ -64,20 +163,23 @@ async function issueSession(user: UserRow) {
 }
 
 export async function authenticateGoogle(body: unknown) {
-  if (!oauthClient || !config.googleClientId) {
-    return { error: "Google OAuth nu este configurat pe server", status: 503 } as const;
+  if (!oauthClient || !config.googleClientId || !config.googleClientSecret) {
+    return { error: "Google OAuth nu este configurat complet pe server", status: 503 } as const;
   }
 
-  const parsed = googlePayloadSchema.safeParse(body);
+  const parsed = googleAuthorizationSchema.safeParse(body);
   if (!parsed.success) {
-    return { error: "Răspuns Google invalid", status: 400 } as const;
+    return { error: "Autorizația Google primită de la aplicație este invalidă", status: 400 } as const;
   }
+
+  const exchange = await exchangeGoogleAuthorization(parsed.data);
+  if (!exchange.ok) return { error: exchange.error, status: exchange.status } as const;
 
   let payload;
   try {
     const ticket = await oauthClient.verifyIdToken({
       audience: config.googleClientId,
-      idToken: parsed.data.idToken,
+      idToken: exchange.idToken,
     });
     payload = ticket.getPayload();
   } catch {

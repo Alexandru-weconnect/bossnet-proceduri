@@ -49,7 +49,13 @@ export async function buildServer() {
   const app = Fastify({
     logger: {
       level: config.nodeEnv === "production" ? "info" : "debug",
-      redact: ["req.headers.authorization", "req.body.idToken", "res.headers.authorization"],
+      redact: [
+        "req.headers.authorization",
+        "req.body.authorizationCode",
+        "req.body.codeVerifier",
+        "req.body.nonce",
+        "res.headers.authorization",
+      ],
     },
     trustProxy: true,
   });
