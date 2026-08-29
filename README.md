@@ -9,7 +9,7 @@ Versiunea `0.4.4` adaugă o scară tipografică configurabilă 10 / 12 / 14 px, 
 - [Descarcă Bossnet Proceduri 0.4.4 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.4.4/Bossnet.Proceduri_0.4.4_x64-setup.exe)
 - [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.4.4)
 
-SHA-256: se publică după verificarea independentă a installerului.
+SHA-256: `f3e4fb5b2d7c939c3eb7154e502f4bd6a5794460da9991e4c340c58f666ee99a`
 
 ## Inclus în versiunea 0.4.4
 
