@@ -13,6 +13,7 @@ import type {
   BossnetNotification,
   BossnetProject,
   BossnetSession,
+  InterfaceFontSize,
   ProjectRoute,
   ProjectStatus,
 } from "../types";
@@ -72,6 +73,7 @@ const PROCEDURES = [
 
 function applyAppearance(settings: AppearanceSettings) {
   const rootStyle = document.documentElement.style;
+  rootStyle.setProperty("--ui-font-min", `${settings.minimumFontSize}px`);
   rootStyle.setProperty("--overlay-alpha", settings.overlayOpacity.toFixed(2));
   rootStyle.setProperty("--atmosphere", settings.atmosphere.toFixed(2));
   rootStyle.setProperty("--overlay-blur", `${Math.round(settings.overlayBlur)}px`);
@@ -408,6 +410,16 @@ const OVERLAY_PRESETS = [
   { label: "CONTRAST", overlayOpacity: 0.9, atmosphere: 0.58, overlayBlur: 28 },
 ] as const;
 
+const FONT_SIZE_OPTIONS: Array<{
+  description: string;
+  label: string;
+  value: InterfaceFontSize;
+}> = [
+  { description: "Densitate maximă", label: "COMPACT", value: 10 },
+  { description: "Citire echilibrată", label: "MEDIU", value: 12 },
+  { description: "Lizibilitate mărită", label: "MARE", value: 14 },
+];
+
 function SettingsPanel({
   settings,
   onChange,
@@ -436,9 +448,35 @@ function SettingsPanel({
         </header>
 
         <div className="settings-panel__body">
-          <section className="settings-section" aria-labelledby="overlay-heading">
+          <section className="settings-section" aria-labelledby="typography-heading">
             <div className="settings-section__heading">
               <span>01</span>
+              <div><h3 id="typography-heading">DIMENSIUNE TEXT</h3><p>Pragul minim al textelor funcționale din interfață.</p></div>
+            </div>
+
+            <div className="type-size-grid" aria-label="Dimensiune minimă text">
+              {FONT_SIZE_OPTIONS.map((option) => {
+                const isActive = settings.minimumFontSize === option.value;
+                return (
+                  <button
+                    aria-pressed={isActive}
+                    className={isActive ? "type-size-button type-size-button--active" : "type-size-button"}
+                    key={option.value}
+                    onClick={() => onChange({ ...settings, minimumFontSize: option.value })}
+                    type="button"
+                  >
+                    <span style={{ fontSize: `${option.value}px` }}>Aa</span>
+                    <strong>{option.label}</strong>
+                    <small>{option.value} PX · {option.description}</small>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className="settings-section" aria-labelledby="overlay-heading">
+            <div className="settings-section__heading">
+              <span>02</span>
               <div><h3 id="overlay-heading">ASPECT OVERLAY</h3><p>Atmosfera ferestrei și lizibilitatea suprafețelor.</p></div>
             </div>
 
@@ -518,7 +556,7 @@ function SettingsPanel({
 
           <section className="settings-section" aria-labelledby="rules-heading">
             <div className="settings-section__heading">
-              <span>02</span>
+              <span>03</span>
               <div><h3 id="rules-heading">REGULI OVERLAY</h3><p>Când și cum rămâne stratul de lucru vizibil.</p></div>
             </div>
             <div className="setting-switches">
@@ -545,7 +583,7 @@ function SettingsPanel({
 
           <section className="settings-section" aria-labelledby="notifications-heading">
             <div className="settings-section__heading">
-              <span>03</span>
+              <span>04</span>
               <div><h3 id="notifications-heading">NOTIFICĂRI</h3><p>Alerte în aplicație și toast-uri Windows.</p></div>
             </div>
             <div className="setting-switches">

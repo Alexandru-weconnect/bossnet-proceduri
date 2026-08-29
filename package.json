@@ -1,10 +1,12 @@
 {
   "name": "bossnet-proceduri",
   "private": true,
-  "version": "0.4.3",
+  "version": "0.4.4",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "dev:web": "vite --host 0.0.0.0",
+    "dev:desktop": "tauri dev",
     "build": "tsc && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "tauri": "tauri"

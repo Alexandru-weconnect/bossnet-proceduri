@@ -65,7 +65,10 @@ export interface BossnetProject {
   createdAt: number;
 }
 
+export type InterfaceFontSize = 10 | 12 | 14;
+
 export interface AppearanceSettings {
+  minimumFontSize: InterfaceFontSize;
   overlayOpacity: number;
   atmosphere: number;
   overlayBlur: number;

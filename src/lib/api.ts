@@ -20,6 +20,10 @@ export interface GoogleAuthorization {
 
 export const API_BASE_URL = (import.meta.env.VITE_BOSSNET_API_URL ?? "").replace(/\/$/, "");
 export const GOOGLE_CLIENT_ID = (import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "").trim();
+export const PREVIEW_EMAIL = (import.meta.env.VITE_PREVIEW_EMAIL ?? "alexandru@bossnet.ro").trim().toLowerCase();
+export const PREVIEW_SYSTEM_ROLE = import.meta.env.VITE_PREVIEW_SYSTEM_ROLE === "editor"
+  ? "editor"
+  : "admin";
 export const MOCK_AUTH_ENABLED =
   import.meta.env.DEV || import.meta.env.VITE_ENABLE_MOCK_AUTH === "true";
 

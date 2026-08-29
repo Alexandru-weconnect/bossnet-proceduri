@@ -4,6 +4,8 @@ import {
   authenticateWithGoogle,
   GOOGLE_CLIENT_ID,
   MOCK_AUTH_ENABLED,
+  PREVIEW_EMAIL,
+  PREVIEW_SYSTEM_ROLE,
   type GoogleAuthorization,
 } from "../lib/api";
 import { createMockSession } from "../lib/storage";
@@ -17,12 +19,16 @@ interface LoginViewProps {
   onAuthenticated: (session: BossnetSession) => void;
 }
 
-type AuthStage = "idle" | "browser" | "server";
+type AuthStage = "idle" | "browser" | "preview" | "server";
 
 const AUTH_STAGE_COPY: Record<Exclude<AuthStage, "idle">, { button: string; message: string }> = {
   browser: {
     button: "AȘTEPT CONFIRMAREA GOOGLE",
     message: "Finalizează autentificarea în browser. Revenirea în aplicație este automată.",
+  },
+  preview: {
+    button: "PREGĂTESC PREVIEW-UL",
+    message: "Se deschide spațiul React fără pornirea runtime-ului Tauri.",
   },
   server: {
     button: "CONECTEZ SESIUNEA",
@@ -65,12 +71,21 @@ export function LoginView({ onAuthenticated }: LoginViewProps) {
   const [error, setError] = useState("");
   const [authStage, setAuthStage] = useState<AuthStage>("idle");
   const isLoading = authStage !== "idle";
+  const webPreviewEnabled = !isTauriRuntime() && MOCK_AUTH_ENABLED;
+  const previewEmail = BOSSNET_EMAIL.test(PREVIEW_EMAIL) ? PREVIEW_EMAIL : "alexandru@bossnet.ro";
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
 
     try {
+      if (webPreviewEnabled) {
+        setAuthStage("preview");
+        await new Promise((resolve) => window.setTimeout(resolve, 180));
+        onAuthenticated(createMockSession(previewEmail, PREVIEW_SYSTEM_ROLE));
+        return;
+      }
+
       if (GOOGLE_CLIENT_ID) {
         if (!isTauriRuntime()) {
           throw new Error("Loginul Google se deschide din aplicația Windows instalată.");
@@ -107,9 +122,9 @@ export function LoginView({ onAuthenticated }: LoginViewProps) {
       ? "Sesiunea rămâne activă 24 de ore."
       : AUTH_STAGE_COPY[authStage].message);
   const buttonLabel = authStage === "idle"
-    ? "CONTINUĂ CU GOOGLE"
+    ? (webPreviewEnabled ? "DESCHIDE PREVIEW REACT" : "CONTINUĂ CU GOOGLE")
     : AUTH_STAGE_COPY[authStage].button;
-  const showAuthFeedback = !GOOGLE_CLIENT_ID || Boolean(error) || isLoading;
+  const showAuthFeedback = (!GOOGLE_CLIENT_ID && !webPreviewEnabled) || Boolean(error) || isLoading;
 
   return (
     <main className="login" aria-labelledby="login-title">
@@ -137,7 +152,7 @@ export function LoginView({ onAuthenticated }: LoginViewProps) {
           </div>
 
           <form onSubmit={handleSubmit} noValidate>
-            {!GOOGLE_CLIENT_ID ? (
+            {!GOOGLE_CLIENT_ID && !webPreviewEnabled ? (
               <>
                 <label htmlFor="email">EMAIL BOSSNET</label>
                 <div className={`input-shell ${error ? "input-shell--error" : ""}`}>
@@ -173,7 +188,7 @@ export function LoginView({ onAuthenticated }: LoginViewProps) {
               disabled={isLoading}
               type="submit"
             >
-              {isLoading ? <span className="button-loader" /> : <GoogleGlyph />}
+              {isLoading ? <span className="button-loader" /> : (webPreviewEnabled ? <Glyph name="spark" size={18} /> : <GoogleGlyph />)}
               <span>{buttonLabel}</span>
               <Glyph name="arrow" size={17} />
             </button>
@@ -182,7 +197,11 @@ export function LoginView({ onAuthenticated }: LoginViewProps) {
           <div className="login-card__status">
             <span>
               <i />
-              <span>{GOOGLE_CLIENT_ID ? "Doar utilizatorii bossnet sunt autorizati" : "MOD TEST"}</span>
+              <span>
+                {webPreviewEnabled
+                  ? "PREVIEW REACT / FĂRĂ TAURI"
+                  : (GOOGLE_CLIENT_ID ? "Doar utilizatorii bossnet sunt autorizati" : "MOD TEST")}
+              </span>
             </span>
           </div>
         </div>

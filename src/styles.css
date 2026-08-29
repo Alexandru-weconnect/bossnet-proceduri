@@ -13,6 +13,7 @@
   --overlay-alpha: 0.76;
   --atmosphere: 0.78;
   --overlay-blur: 20px;
+  --ui-font-min: 10px;
   --display: "Barlow Condensed", sans-serif;
 }
 
@@ -32,7 +33,7 @@ body,
 
 body {
   min-width: 320px;
-  font-size: 14px;
+  font-size: var(--ui-font-min);
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   -webkit-user-select: none;
@@ -121,7 +122,7 @@ textarea:focus-visible,
   padding-left: 14px;
   color: rgba(255, 255, 255, 0.82);
   font-family: var(--display);
-  font-size: 14px;
+  font-size: max(13px, var(--ui-font-min));
   font-weight: 500;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -141,7 +142,7 @@ textarea:focus-visible,
   background: rgba(255, 192, 0, 0.1);
   color: var(--gold);
   font-family: "Manrope", sans-serif;
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
   letter-spacing: 0.14em;
 }
 
@@ -183,7 +184,7 @@ textarea:focus-visible,
   gap: 10px;
   margin: 0;
   color: rgba(255, 255, 255, 0.58);
-  font-size: 14px;
+  font-size: max(9px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.14em;
 }
@@ -197,7 +198,7 @@ textarea:focus-visible,
 
 .micro-label {
   color: var(--gold);
-  font-size: 14px;
+  font-size: max(9px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.14em;
 }
@@ -300,7 +301,7 @@ textarea:focus-visible,
   margin: 0;
   color: rgba(255, 255, 255, 0.58);
   font-family: var(--display);
-  font-size: 14px;
+  font-size: max(12px, var(--ui-font-min));
   letter-spacing: 0.1em;
   line-height: 1.4;
 }
@@ -323,7 +324,7 @@ textarea:focus-visible,
   gap: 9px;
   color: rgba(255, 255, 255, 0.35);
   font-family: var(--display);
-  font-size: 14px;
+  font-size: max(10px, var(--ui-font-min));
 }
 
 .login__index div {
@@ -404,7 +405,7 @@ textarea:focus-visible,
 .login-card__heading p {
   margin: 0 0 22px;
   color: rgba(255, 255, 255, 0.45);
-  font-size: 14px;
+  font-size: max(10px, var(--ui-font-min));
 }
 
 .login-card form label,
@@ -413,7 +414,7 @@ textarea:focus-visible,
   display: block;
   margin-bottom: 9px;
   color: rgba(255, 255, 255, 0.51);
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.12em;
 }
@@ -446,7 +447,7 @@ textarea:focus-visible,
   outline: 0;
   background: transparent;
   color: #fff;
-  font-size: 14px;
+  font-size: max(11px, var(--ui-font-min));
   caret-color: var(--gold);
   -webkit-user-select: text;
   user-select: text;
@@ -454,14 +455,14 @@ textarea:focus-visible,
 
 .input-shell > span {
   color: rgba(255, 255, 255, 0.3);
-  font-size: 14px;
+  font-size: max(9px, var(--ui-font-min));
 }
 
 .field-message {
   min-height: 36px;
   padding-top: 7px;
   color: rgba(255, 255, 255, 0.34);
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
 }
 
 .field-message--active {
@@ -483,7 +484,7 @@ textarea:focus-visible,
   border: 0;
   background: var(--gold);
   color: #000;
-  font-size: 14px;
+  font-size: max(9px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.08em;
 }
@@ -516,7 +517,7 @@ textarea:focus-visible,
   padding-top: 13px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.28);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   font-weight: 600;
   gap: 8px 14px;
   letter-spacing: 0.08em;
@@ -652,7 +653,7 @@ textarea:focus-visible,
 .sidebar__brand span {
   margin-top: 3px;
   color: var(--gold);
-  font-size: 14px;
+  font-size: max(9px, var(--ui-font-min));
   letter-spacing: 0.14em;
 }
 
@@ -666,7 +667,7 @@ textarea:focus-visible,
 .sidebar__label {
   padding: 0 10px 9px;
   color: rgba(255, 255, 255, 0.26);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.12em;
 }
@@ -683,7 +684,7 @@ textarea:focus-visible,
   border: 0;
   background: transparent;
   color: rgba(255, 255, 255, 0.43);
-  font-size: 14px;
+  font-size: max(10px, var(--ui-font-min));
   text-align: left;
 }
 
@@ -717,7 +718,7 @@ textarea:focus-visible,
   padding: 2px 6px;
   background: rgba(255, 192, 0, 0.14);
   color: var(--gold);
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
   font-style: normal;
   text-align: center;
 }
@@ -774,14 +775,14 @@ textarea:focus-visible,
 }
 
 .account-block strong {
-  font-size: 14px;
+  font-size: max(9px, var(--ui-font-min));
   font-weight: 600;
   text-transform: uppercase;
 }
 
 .account-block div span {
   color: rgba(255, 255, 255, 0.3);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
 }
 
 .account-block button {
@@ -821,7 +822,7 @@ textarea:focus-visible,
 
 .main-header__label {
   color: rgba(255, 255, 255, 0.26);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.12em;
 }
@@ -856,7 +857,7 @@ textarea:focus-visible,
   border: 2px solid #000;
   background: var(--gold);
   color: #000;
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   font-weight: 700;
 }
 
@@ -865,7 +866,7 @@ textarea:focus-visible,
   align-items: center;
   gap: 8px;
   color: rgba(255, 255, 255, 0.35);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.08em;
 }
@@ -926,7 +927,7 @@ textarea:focus-visible,
   padding-left: 16px;
   border-left: 1px solid rgba(255, 192, 0, 0.5);
   color: rgba(255, 255, 255, 0.43);
-  font-size: 14px;
+  font-size: max(10px, var(--ui-font-min));
   line-height: 1.75;
 }
 
@@ -979,7 +980,7 @@ textarea:focus-visible,
   align-self: start;
   color: rgba(255, 255, 255, 0.22);
   font-family: var(--display);
-  font-size: 14px;
+  font-size: max(12px, var(--ui-font-min));
 }
 
 .entry-card__icon {
@@ -1016,7 +1017,7 @@ textarea:focus-visible,
 
 .entry-card__body small {
   color: rgba(255, 255, 255, 0.35);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.12em;
 }
@@ -1045,7 +1046,7 @@ textarea:focus-visible,
   margin-top: auto;
   padding: 24px 3px 0;
   color: rgba(255, 255, 255, 0.24);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   font-weight: 600;
   gap: 12px 20px;
   flex-wrap: wrap;
@@ -1075,7 +1076,7 @@ textarea:focus-visible,
   border-left: 1px solid var(--gold);
   background: rgba(255, 192, 0, 0.07);
   color: rgba(255, 255, 255, 0.45);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.1em;
 }
@@ -1126,7 +1127,7 @@ textarea:focus-visible,
   margin-bottom: 11px;
   color: var(--gold);
   font-family: var(--display);
-  font-size: 14px;
+  font-size: max(12px, var(--ui-font-min));
   letter-spacing: 0.12em;
 }
 
@@ -1140,7 +1141,7 @@ textarea:focus-visible,
 .route-option small {
   margin-top: 5px;
   color: rgba(255, 255, 255, 0.36);
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
   line-height: 1.5;
 }
 
@@ -1178,7 +1179,7 @@ textarea:focus-visible,
   background: rgba(0, 0, 0, 0.26);
   color: #fff;
   caret-color: var(--gold);
-  font-size: 14px;
+  font-size: max(10px, var(--ui-font-min));
   -webkit-user-select: text;
   user-select: text;
 }
@@ -1204,14 +1205,14 @@ textarea:focus-visible,
 
 .procedure-note strong {
   display: block;
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
   letter-spacing: 0.12em;
 }
 
 .procedure-note p {
   margin: 5px 0 0;
   color: rgba(255, 255, 255, 0.4);
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
   line-height: 1.6;
 }
 
@@ -1232,7 +1233,7 @@ textarea:focus-visible,
   gap: 9px;
   padding: 0 19px;
   border-radius: 0;
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.08em;
 }
@@ -1297,7 +1298,7 @@ textarea:focus-visible,
   max-width: 380px;
   margin: 17px 0 23px;
   color: rgba(255, 255, 255, 0.38);
-  font-size: 14px;
+  font-size: max(10px, var(--ui-font-min));
   line-height: 1.7;
 }
 
@@ -1326,7 +1327,7 @@ textarea:focus-visible,
 .project-row__index {
   color: rgba(255, 255, 255, 0.2);
   font-family: var(--display);
-  font-size: 14px;
+  font-size: max(12px, var(--ui-font-min));
 }
 
 .project-row__route {
@@ -1335,7 +1336,7 @@ textarea:focus-visible,
   background: rgba(255, 192, 0, 0.08);
   color: var(--gold);
   font-family: var(--display);
-  font-size: 14px;
+  font-size: max(10px, var(--ui-font-min));
   letter-spacing: 0.08em;
   text-align: center;
 }
@@ -1360,7 +1361,7 @@ textarea:focus-visible,
 .project-row__name small {
   overflow: hidden;
   color: rgba(255, 255, 255, 0.28);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1370,12 +1371,12 @@ textarea:focus-visible,
   align-items: center;
   gap: 7px;
   color: rgba(255, 255, 255, 0.48);
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
 }
 
 .project-row time {
   color: rgba(255, 255, 255, 0.26);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   text-transform: uppercase;
 }
 
@@ -1404,7 +1405,7 @@ textarea:focus-visible,
 .procedure-card__code {
   color: rgba(255, 255, 255, 0.22);
   font-family: var(--display);
-  font-size: 14px;
+  font-size: max(11px, var(--ui-font-min));
 }
 
 .procedure-card__icon {
@@ -1431,7 +1432,7 @@ textarea:focus-visible,
   max-width: 360px;
   margin: 0;
   color: rgba(255, 255, 255, 0.35);
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
   line-height: 1.55;
 }
 
@@ -1443,7 +1444,7 @@ textarea:focus-visible,
   padding-top: 11px;
   border-top: 1px solid rgba(255, 255, 255, 0.07);
   color: rgba(255, 255, 255, 0.31);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.08em;
 }
@@ -1530,7 +1531,7 @@ textarea:focus-visible,
 .settings-section__heading > span {
   color: var(--gold);
   font-family: var(--display);
-  font-size: 14px;
+  font-size: max(12px, var(--ui-font-min));
 }
 
 .settings-section__heading h3 {
@@ -1544,8 +1545,66 @@ textarea:focus-visible,
 .settings-section__heading p {
   margin: 4px 0 0;
   color: rgba(255, 255, 255, 0.31);
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
   line-height: 1.55;
+}
+
+.type-size-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.type-size-button {
+  display: grid;
+  min-height: 104px;
+  grid-template-rows: 33px auto auto;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.025);
+  text-align: left;
+}
+
+.type-size-button > span {
+  display: grid;
+  width: 31px;
+  height: 31px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.58);
+  font-family: var(--display);
+  line-height: 1;
+}
+
+.type-size-button strong {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: max(8px, var(--ui-font-min));
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+.type-size-button small {
+  color: rgba(255, 255, 255, 0.26);
+  font-size: max(7px, var(--ui-font-min));
+  line-height: 1.35;
+}
+
+.type-size-button:hover,
+.type-size-button--active {
+  border-color: var(--gold);
+  background: rgba(255, 192, 0, 0.08);
+}
+
+.type-size-button--active > span {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: #000;
+}
+
+.type-size-button--active strong {
+  color: var(--gold);
 }
 
 .preset-grid {
@@ -1561,7 +1620,7 @@ textarea:focus-visible,
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.025);
   color: rgba(255, 255, 255, 0.42);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.12em;
 }
@@ -1587,7 +1646,7 @@ textarea:focus-visible,
   justify-content: space-between;
   margin-bottom: 13px;
   color: rgba(255, 255, 255, 0.53);
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.08em;
 }
@@ -1623,7 +1682,7 @@ textarea:focus-visible,
   justify-content: space-between;
   margin-top: 11px;
   color: rgba(255, 255, 255, 0.2);
-  font-size: 14px;
+  font-size: max(6px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.14em;
 }
@@ -1663,14 +1722,14 @@ textarea:focus-visible,
 }
 
 .setting-switch strong {
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.08em;
 }
 
 .setting-switch small {
   color: rgba(255, 255, 255, 0.31);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   line-height: 1.45;
 }
 
@@ -1729,7 +1788,7 @@ textarea:focus-visible,
 .settings-panel__hint {
   margin: 12px 0 0;
   color: rgba(255, 255, 255, 0.27);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   line-height: 1.6;
   text-align: center;
 }
@@ -1789,13 +1848,13 @@ textarea:focus-visible,
 .notification-item p {
   margin: 4px 0 7px;
   color: rgba(255, 255, 255, 0.38);
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
   line-height: 1.55;
 }
 
 .notification-item time {
   color: rgba(255, 255, 255, 0.22);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   letter-spacing: 0.1em;
 }
 
@@ -1820,7 +1879,7 @@ textarea:focus-visible,
 
 .notification-empty p {
   margin: 6px 0 0;
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
 }
 
 .notification-panel__clear {
@@ -1871,7 +1930,7 @@ textarea:focus-visible,
 .app-toast p {
   margin: 3px 0 0;
   color: rgba(255, 255, 255, 0.42);
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
   line-height: 1.5;
 }
 
@@ -2054,7 +2113,7 @@ textarea:focus-visible,
   outline: 0;
   background: transparent;
   color: #fff;
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.04em;
   caret-color: var(--gold);
@@ -2071,7 +2130,7 @@ textarea:focus-visible,
   background: rgba(255, 192, 0, 0.12);
   color: var(--gold);
   font-family: var(--display);
-  font-size: 14px;
+  font-size: max(12px, var(--ui-font-min));
 }
 
 .people-stats {
@@ -2110,7 +2169,7 @@ textarea:focus-visible,
   grid-row: 1 / 3;
   color: rgba(255, 255, 255, 0.2);
   font-family: var(--display);
-  font-size: 14px;
+  font-size: max(11px, var(--ui-font-min));
 }
 
 .people-stats strong {
@@ -2126,7 +2185,7 @@ textarea:focus-visible,
   align-self: start;
   margin-top: 5px;
   color: rgba(255, 255, 255, 0.34);
-  font-size: 14px;
+  font-size: max(6px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.08em;
 }
@@ -2146,7 +2205,7 @@ textarea:focus-visible,
   border: 0;
   background: transparent;
   color: rgba(255, 255, 255, 0.33);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.1em;
 }
@@ -2172,7 +2231,7 @@ textarea:focus-visible,
   gap: 7px;
   margin-left: auto;
   color: rgba(255, 255, 255, 0.23);
-  font-size: 14px;
+  font-size: max(6px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.08em;
 }
@@ -2214,7 +2273,7 @@ textarea:focus-visible,
 .hierarchy-row__index {
   color: rgba(255, 255, 255, 0.18);
   font-family: var(--display);
-  font-size: 14px;
+  font-size: max(10px, var(--ui-font-min));
   text-align: center;
 }
 
@@ -2289,14 +2348,14 @@ textarea:focus-visible,
 
 .person-identity small {
   color: rgba(255, 255, 255, 0.32);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
 }
 
 .hierarchy-row__departments {
   padding: 0 12px;
   overflow: hidden;
   color: rgba(255, 255, 255, 0.4);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.04em;
   text-overflow: ellipsis;
@@ -2317,7 +2376,7 @@ textarea:focus-visible,
   margin-top: 4px;
   color: rgba(255, 255, 255, 0.22);
   font-family: "Manrope", sans-serif;
-  font-size: 14px;
+  font-size: max(5px, var(--ui-font-min));
   letter-spacing: 0;
   line-height: 1.25;
 }
@@ -2337,7 +2396,7 @@ textarea:focus-visible,
 .person-card a {
   overflow: hidden;
   color: rgba(255, 255, 255, 0.42);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2346,7 +2405,7 @@ textarea:focus-visible,
 .hierarchy-row__contact a:first-child {
   color: rgba(255, 255, 255, 0.7);
   font-family: var(--display);
-  font-size: 14px;
+  font-size: max(11px, var(--ui-font-min));
   letter-spacing: 0.04em;
 }
 
@@ -2392,7 +2451,7 @@ textarea:focus-visible,
   padding: 5px 9px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   color: rgba(255, 255, 255, 0.38);
-  font-size: 14px;
+  font-size: max(6px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2422,7 +2481,7 @@ textarea:focus-visible,
 
 .person-card dt {
   color: rgba(255, 255, 255, 0.2);
-  font-size: 14px;
+  font-size: max(5px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.08em;
   white-space: nowrap;
@@ -2432,7 +2491,7 @@ textarea:focus-visible,
   margin: 7px 0 0;
   overflow: hidden;
   color: rgba(255, 255, 255, 0.55);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   text-overflow: ellipsis;
   white-space: nowrap;
   -webkit-user-select: text;
@@ -2482,7 +2541,7 @@ textarea:focus-visible,
   max-width: 510px;
   margin: 0;
   color: rgba(255, 255, 255, 0.4);
-  font-size: 14px;
+  font-size: max(9px, var(--ui-font-min));
   line-height: 1.7;
 }
 
@@ -2492,7 +2551,7 @@ textarea:focus-visible,
   gap: 9px;
   margin-top: 22px;
   color: rgba(255, 255, 255, 0.3);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.1em;
 }
@@ -2527,7 +2586,7 @@ textarea:focus-visible,
 
 .people-loading small {
   color: rgba(255, 255, 255, 0.24);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   letter-spacing: 0.1em;
 }
 
@@ -2609,7 +2668,7 @@ textarea:focus-visible,
   align-items: center;
   gap: 8px;
   color: var(--gold);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.09em;
 }
@@ -2618,7 +2677,7 @@ textarea:focus-visible,
   max-width: 440px;
   margin: 9px 0 0;
   color: rgba(255, 255, 255, 0.4);
-  font-size: 14px;
+  font-size: max(9px, var(--ui-font-min));
   line-height: 1.7;
 }
 
@@ -2685,7 +2744,7 @@ textarea:focus-visible,
 .debug-panel__header p {
   margin: 3px 0 0;
   color: rgba(255, 255, 255, 0.3);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   line-height: 1.45;
 }
 
@@ -2703,7 +2762,7 @@ textarea:focus-visible,
 .debug-field > span:first-child,
 .range-picker__label {
   color: rgba(255, 255, 255, 0.38);
-  font-size: 14px;
+  font-size: max(7px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.09em;
 }
@@ -2711,7 +2770,7 @@ textarea:focus-visible,
 .debug-field > small {
   align-self: flex-end;
   color: rgba(255, 255, 255, 0.25);
-  font-size: 14px;
+  font-size: max(6px, var(--ui-font-min));
   letter-spacing: 0.07em;
 }
 
@@ -2745,7 +2804,7 @@ textarea:focus-visible,
   background: transparent;
   color: #fff;
   cursor: pointer;
-  font-size: 14px;
+  font-size: max(9px, var(--ui-font-min));
 }
 
 .debug-select-shell select:focus-visible,
@@ -2769,7 +2828,7 @@ textarea:focus-visible,
   gap: 7px;
   margin-top: 11px;
   color: rgba(255, 255, 255, 0.29);
-  font-size: 14px;
+  font-size: max(6px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.08em;
 }
@@ -2807,7 +2866,7 @@ textarea:focus-visible,
   background: transparent;
   color: #fff;
   caret-color: var(--gold);
-  font-size: 14px;
+  font-size: max(9px, var(--ui-font-min));
 }
 
 .debug-search input::-webkit-search-cancel-button {
@@ -2829,7 +2888,7 @@ textarea:focus-visible,
   background: rgba(255, 192, 0, 0.1);
   color: var(--gold);
   font-family: var(--display);
-  font-size: 14px;
+  font-size: max(11px, var(--ui-font-min));
 }
 
 .debug-search > button:hover {
@@ -2850,7 +2909,7 @@ textarea:focus-visible,
   padding: 6px 8px;
   border: 1px solid rgba(255, 255, 255, 0.09);
   color: rgba(255, 255, 255, 0.35);
-  font-size: 14px;
+  font-size: max(6px, var(--ui-font-min));
   font-style: normal;
   letter-spacing: 0.07em;
 }
@@ -2891,7 +2950,7 @@ textarea:focus-visible,
 .debug-card header > span {
   color: rgba(255, 255, 255, 0.2);
   font-family: var(--display);
-  font-size: 14px;
+  font-size: max(10px, var(--ui-font-min));
 }
 
 .debug-card header em {
@@ -2899,7 +2958,7 @@ textarea:focus-visible,
   border-left: 1px solid var(--gold);
   background: rgba(255, 192, 0, 0.08);
   color: var(--gold);
-  font-size: 14px;
+  font-size: max(6px, var(--ui-font-min));
   font-style: normal;
   letter-spacing: 0.08em;
 }
@@ -2927,7 +2986,7 @@ textarea:focus-visible,
 }
 
 .debug-card footer small {
-  font-size: 14px;
+  font-size: max(6px, var(--ui-font-min));
   letter-spacing: 0.08em;
 }
 
@@ -2955,7 +3014,7 @@ textarea:focus-visible,
   background: transparent;
   color: #fff;
   caret-color: var(--gold);
-  font-size: 14px;
+  font-size: max(8px, var(--ui-font-min));
 }
 
 .date-input-shell input::-webkit-calendar-picker-indicator,
@@ -2995,7 +3054,7 @@ textarea:focus-visible,
 .range-picker > label small {
   margin-bottom: 5px;
   color: rgba(255, 255, 255, 0.25);
-  font-size: 14px;
+  font-size: max(5px, var(--ui-font-min));
   letter-spacing: 0.12em;
 }
 
@@ -3019,7 +3078,7 @@ textarea:focus-visible,
   align-self: center;
   gap: 5px;
   color: var(--gold);
-  font-size: 14px;
+  font-size: max(6px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.05em;
   white-space: nowrap;
@@ -3063,7 +3122,7 @@ textarea:focus-visible,
 
 .icon-lab small {
   color: rgba(255, 255, 255, 0.27);
-  font-size: 14px;
+  font-size: max(6px, var(--ui-font-min));
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -3079,7 +3138,7 @@ textarea:focus-visible,
   background: rgba(0, 0, 0, 0.32);
   color: #fff;
   caret-color: var(--gold);
-  font-size: 14px;
+  font-size: max(9px, var(--ui-font-min));
   line-height: 1.65;
 }
 
@@ -3140,7 +3199,7 @@ textarea:focus-visible,
   outline: 0;
   color: rgba(255, 255, 255, 0.68);
   caret-color: var(--gold);
-  font-size: 14px;
+  font-size: max(9px, var(--ui-font-min));
   line-height: 1.65;
   scrollbar-color: rgba(255, 192, 0, 0.34) transparent;
   scrollbar-width: thin;
@@ -3181,7 +3240,7 @@ textarea:focus-visible,
   padding: 0 10px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.24);
-  font-size: 14px;
+  font-size: max(6px, var(--ui-font-min));
   letter-spacing: 0.08em;
 }
 
@@ -3207,7 +3266,7 @@ textarea:focus-visible,
   padding: 13px 15px;
   border: 1px solid rgba(255, 255, 255, 0.09);
   color: rgba(255, 255, 255, 0.27);
-  font-size: 14px;
+  font-size: max(6px, var(--ui-font-min));
   font-weight: 600;
   letter-spacing: 0.07em;
 }

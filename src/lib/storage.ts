@@ -6,6 +6,7 @@ const APPEARANCE_KEY = "bossnet:appearance:v1";
 const SESSION_DURATION_MS = 24 * 60 * 60 * 1000;
 
 export const DEFAULT_APPEARANCE: AppearanceSettings = {
+  minimumFontSize: 10,
   overlayOpacity: 0.76,
   atmosphere: 0.78,
   overlayBlur: 20,
@@ -56,13 +57,16 @@ export function readSession(): BossnetSession | null {
   return session;
 }
 
-export function createMockSession(email: string): BossnetSession {
+export function createMockSession(
+  email: string,
+  systemRole: BossnetSession["systemRole"] = "editor",
+): BossnetSession {
   const session: BossnetSession = {
     authMode: "mock",
     email: email.toLowerCase(),
     expiresAt: Date.now() + SESSION_DURATION_MS,
     name: email.split("@")[0] ?? email,
-    systemRole: "editor",
+    systemRole,
     token: null,
   };
   writeJson(SESSION_KEY, session);
@@ -94,6 +98,10 @@ export function saveProjects(projects: BossnetProject[]): void {
 export function readAppearance(): AppearanceSettings {
   const settings = readJson<Partial<AppearanceSettings>>(APPEARANCE_KEY);
   return {
+    minimumFontSize:
+      settings?.minimumFontSize === 12 || settings?.minimumFontSize === 14
+        ? settings.minimumFontSize
+        : DEFAULT_APPEARANCE.minimumFontSize,
     overlayOpacity:
       typeof settings?.overlayOpacity === "number"
         ? Math.min(0.94, Math.max(0.48, settings.overlayOpacity))

@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   clearScreen: false,
   server: {
+    allowedHosts: ["proceduri-dev.teambossnet.ro"],
     port: 1420,
     strictPort: true,
     watch: {

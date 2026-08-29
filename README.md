@@ -2,24 +2,26 @@
 
 Aplicație desktop Tauri 2 pentru pornirea și urmărirea proiectelor Bossnet. Interfața este compactă, folosește un limbaj vizual nocturn, geometric și include un strat transparent configurabil.
 
-Versiunea `0.4.3` repară livrarea notificărilor native după repornirea aplicației și simplifică ecranul de login. Trimiterea Windows este confirmată de comanda nativă Tauri, iar testul afișează o instrucțiune clară dacă sistemul blochează notificarea.
+Versiunea `0.4.4` adaugă o scară tipografică configurabilă 10 / 12 / 14 px, cu valoarea implicită compactă de 10 px, și separă dezvoltarea zilnică React de buildurile Tauri. Loginul Windows, notificările native și integrarea PostgreSQL rămân active.
 
 ## Descărcare Windows
 
-- [Descarcă Bossnet Proceduri 0.4.3 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.4.3/Bossnet.Proceduri_0.4.3_x64-setup.exe)
-- [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.4.3)
+- [Descarcă Bossnet Proceduri 0.4.4 — x64 installer `.exe`](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/download/v0.4.4/Bossnet.Proceduri_0.4.4_x64-setup.exe)
+- [Pagina release-ului și notele versiunii](https://github.com/Alexandru-weconnect/bossnet-proceduri/releases/tag/v0.4.4)
 
-SHA-256: `f845afd05faa7ea1e294d9203164b2a3d2d6a51515621ce723231916b8d06227`
+SHA-256: se publică după verificarea independentă a installerului.
 
-## Inclus în versiunea 0.4.3
+## Inclus în versiunea 0.4.4
 
 - notificările Windows sunt trimise printr-o comandă Rust nativă, fără starea de permisiune volatilă a WebView2;
 - testul de notificare confirmă livrarea nativă și explică exact unde trebuie permisă aplicația dacă Windows o blochează;
 - loginul afișează „PROCEDURI INTERNE” și „Last update: v0.4 MAHMURIA”;
 - câmpul email, explicația introductivă și eticheta PKCE au fost eliminate din loginul de producție;
 - cardul păstrează doar acțiunea Google și mesajul „Doar utilizatorii bossnet sunt autorizati”;
-- toate textele funcționale au minimum 14 px;
-- cardurile, rândurile, formularele și panourile au înălțimi adaptate noii tipografii;
+- fontul minim este configurabil la 10, 12 sau 14 px și se păstrează după repornire;
+- valoarea implicită este 10 px, iar ierarhia vizuală originală a textelor rămâne intactă;
+- cardurile, rândurile, formularele și panourile se adaptează dinamic la scala aleasă;
+- preview-ul React are login local rapid ca `alexandru@bossnet.ro` / `admin`, fără token de producție;
 - loginul și meniul lateral răspund corect la fereastra minimă 820×580;
 - cardurile Director folosesc două coloane, cu emailul pe rând complet, fără suprapuneri;
 - login Google Workspace `@bossnet.ro` în browserul sistemului, cu Authorization Code și PKCE;
@@ -45,7 +47,7 @@ SHA-256: `f845afd05faa7ea1e294d9203164b2a3d2d6a51515621ce723231916b8d06227`
 
 > Client ID-ul Google Desktop este configurat în installer și în API. Client Secret-ul este configurat numai în mediul privat al API-ului, nu în Git, frontend sau installer.
 
-## Arhitectura 0.4.3
+## Arhitectura 0.4.4
 
 ```text
 Aplicația Windows
@@ -65,12 +67,22 @@ Aplicația Windows
 
 ## Dezvoltare
 
+Pentru lucru zilnic pe interfața React, pornește numai Vite. Ai refresh imediat și un login local de preview, fără compilarea Rust/Tauri:
+
 ```bash
 npm install
-npm run tauri dev
+npm run dev:web
 ```
 
-Copiază `.env.example` în `.env.local` și completează URL-ul API plus Client ID-ul Google Desktop. Client ID-ul nu este secret; Client Secret-ul, parolele DB și tokenurile nu se pun în fișierele frontend.
+Deschide adresa afișată de Vite (local `http://localhost:1420`, prin tunel `https://proceduri-dev.teambossnet.ro`) și apasă **DESCHIDE PREVIEW REACT**. Preview-ul pornește implicit ca `alexandru@bossnet.ro`, cu rol `admin`. Funcțiile strict native — notificările Windows, tray-ul și callback-ul OAuth Desktop — se verifică separat, la milestone-uri:
+
+```bash
+npm run dev:desktop
+```
+
+Copiază `.env.example` în `.env.local` și completează URL-ul API plus Client ID-ul Google Desktop. `VITE_PREVIEW_EMAIL` și `VITE_PREVIEW_SYSTEM_ROLE` stabilesc identitatea mock folosită numai în preview-ul web. Client ID-ul nu este secret; Client Secret-ul, parolele DB și tokenurile nu se pun în fișierele frontend.
+
+Pentru autentificare Google reală direct în browser este necesar un client OAuth separat de tip **Web application**. Clientul Desktop existent rămâne dedicat aplicației Tauri; JSON-ul și `client_secret` nu se copiază în React.
 
 Build frontend:
 
